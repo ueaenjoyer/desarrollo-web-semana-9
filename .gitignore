@@ -8,3 +8,7 @@ wheels/
 
 # Virtual environments
 .venv
+
+README.md
+DEPLOY.md
+.gitignore
