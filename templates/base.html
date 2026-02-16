@@ -1,212 +1,37 @@
-<!-- ============================================
-     PLANTILLA BASE - base.html
-     ============================================
-     
-     ¿Qué es esto?
-     Esta es la plantilla MAESTRA de tu sitio web. Todas las demás
-     páginas (index.html, about.html, etc.) HEREDAN de esta plantilla.
-     
-     ¿Por qué es útil?
-     En lugar de copiar el header, nav y footer en cada página,
-     lo escribes UNA VEZ aquí y todas las páginas lo reutilizan.
-     
-     Piensa en esto como una "plantilla de Word" que tiene el
-     encabezado y pie de página, y tú solo llenas el contenido.
-============================================ -->
-
 <!DOCTYPE html>
-<!-- DOCTYPE le dice al navegador que este es un documento HTML5 -->
-
 <html lang="es">
-<!-- lang="es" indica que el contenido está en español -->
-<!-- Esto ayuda a los lectores de pantalla y buscadores -->
 
 <head>
-    <!-- ============================================
-         HEAD - Información sobre la página
-         ============================================
-         El <head> NO se ve en la página, pero contiene
-         información importante para el navegador
-    ============================================ -->
-
-    <!-- Charset: Permite usar acentos y caracteres especiales (ñ, á, é, etc.) -->
     <meta charset="UTF-8">
-
-    <!-- Viewport: Hace que la página se vea bien en celulares y tablets -->
-    <!-- width=device-width: el ancho se adapta al dispositivo -->
-    <!-- initial-scale=1.0: zoom inicial al 100% -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- ============================================
-         TÍTULO DINÁMICO CON JINJA2
-         ============================================
-         {% block title %} es un BLOQUE de Jinja2
-         
-         ¿Cómo funciona?
-         1. Cada página puede definir su propio título
-         2. Si no lo define, usa "TechByte - Tienda de Gadgets"
-         
-         Ejemplo en index.html:
-         {% block title %}Inicio - TechByte{% endblock %}
-         
-         Resultado: <title>Inicio - TechByte</title>
-    ============================================ -->
     <title>{% block title %}TechByte - Tienda de Gadgets{% endblock %}</title>
-
-    <!-- ============================================
-         ENLACE AL ARCHIVO CSS
-         ============================================
-         {{ url_for('static', filename='styles.css') }}
-         
-         ¿Qué hace url_for()?
-         Genera automáticamente la ruta correcta al archivo CSS.
-         
-         En lugar de escribir: href="/static/styles.css"
-         Flask genera la ruta correcta automáticamente.
-         
-         Ventaja: Si mueves tu app a otro servidor o carpeta,
-         los enlaces siguen funcionando.
-    ============================================ -->
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <!-- rel="stylesheet" indica que es un archivo de estilos CSS -->
-    <!-- href es la ruta al archivo -->
 </head>
 
 <body>
-    <!-- ============================================
-         BODY - Contenido visible de la página
-         ============================================
-         Todo lo que está dentro de <body> se ve en el navegador
-    ============================================ -->
-
-    <!-- ============================================
-         HEADER - Encabezado de la página
-         ============================================
-         El <header> es una etiqueta HTML5 semántica que indica
-         que este es el encabezado principal del sitio.
-         
-         Aparecerá en TODAS las páginas porque está en base.html
-    ============================================ -->
     <header>
-        <!-- <h1> es el título más importante de la página -->
-        <!-- Solo debe haber UN <h1> por página (buena práctica SEO) -->
         <h1>🛒 TechByte - Tienda de Gadgets</h1>
     </header>
 
-    <!-- ============================================
-         NAV - Menú de navegación
-         ============================================
-         <nav> es otra etiqueta semántica HTML5 que indica
-         que este es el menú de navegación principal.
-    ============================================ -->
     <nav>
-        <!-- <ul> = Unordered List (lista sin orden) -->
         <ul>
-            <!-- Cada <li> (List Item) es un elemento de la lista -->
-
-            <!-- ============================================
-                 ENLACES CON url_for()
-                 ============================================
-                 {{ url_for('index') }} genera la URL de la función index()
-                 
-                 ¿Por qué usar url_for() en vez de href="/"?
-                 
-                 1. Si cambias la ruta en app.py, los enlaces se actualizan solos
-                 2. Funciona aunque la app esté en un subdirectorio
-                 3. Es más fácil de mantener
-                 
-                 Ejemplo:
-                 En app.py tienes: @app.route("/")
-                                   def index():
-                 
-                 url_for('index') genera: "/"
-                 
-                 Si cambias a: @app.route("/inicio")
-                 url_for('index') ahora genera: "/inicio"
-                 ¡Sin cambiar nada en el HTML!
-            ============================================ -->
-
             <li><a href="{{ url_for('index') }}">🏠 Inicio</a></li>
-            <!-- href: HyperText REFerence - la dirección del enlace -->
-            <!-- El texto entre <a> y </a> es lo que se ve clickeable -->
-
             <li><a href="{{ url_for('about') }}">ℹ️ Acerca de</a></li>
-            <!-- url_for('about') busca la función about() en app.py -->
-
             <li><a href="{{ url_for('productos') }}">📦 Productos</a></li>
-            <!-- url_for('productos') busca la función productos() en app.py -->
-
             <li><a href="{{ url_for('contacto') }}">📧 Contacto</a></li>
-            <!-- url_for('contacto') busca la función contacto() en app.py -->
         </ul>
     </nav>
 
-    <!-- ============================================
-         CONTENEDOR PRINCIPAL
-         ============================================
-         Este <div> con class="container" agrupa el contenido
-         principal de cada página.
-         
-         La clase "container" está definida en styles.css
-         y le da formato (ancho máximo, centrado, padding, etc.)
-    ============================================ -->
     <div class="container">
-        <!-- ============================================
-             BLOQUE DE CONTENIDO - ¡AQUÍ VA LA MAGIA!
-             ============================================
-             {% block content %} ... {% endblock %}
-             
-             Este es el BLOQUE MÁS IMPORTANTE de la plantilla base.
-             
-             ¿Cómo funciona?
-             
-             1. En base.html defines: {% block content %}{% endblock %}
-                (está vacío, es solo un "hueco")
-             
-             2. En index.html escribes:
-                {% block content %}
-                  <h1>Bienvenido</h1>
-                  <p>Este es el contenido de la página de inicio</p>
-                {% endblock %}
-             
-             3. Cuando Flask renderiza index.html:
-                - Toma base.html como plantilla
-                - Reemplaza {% block content %} con el contenido de index.html
-                - El resultado final tiene el header, nav, footer de base.html
-                  PERO el contenido específico de index.html
-             
-             Analogía:
-             base.html es como un marco de fotos (header, nav, footer)
-             {% block content %} es el espacio donde pones la foto
-             Cada página (index, about, etc.) es una foto diferente
-             
-             ¡Todas las páginas comparten el mismo marco!
-        ============================================ -->
         {% block content %}
-        <!-- Este bloque está vacío en base.html -->
-        <!-- Las páginas hijas lo llenarán con su contenido -->
         {% endblock %}
     </div>
 
-    <!-- ============================================
-         FOOTER - Pie de página
-         ============================================
-         <footer> es una etiqueta semántica HTML5 para el pie de página.
-         
-         Aparecerá en TODAS las páginas porque está en base.html
-    ============================================ -->
     <footer>
-        <!-- &copy; es un "HTML entity" que muestra el símbolo © -->
         <p>&copy; 2026 TechByte - Tienda de Gadgets</p>
-
         <p>Proyecto Flask - Semana 10</p>
-
-        <!-- ❤️ es un emoji Unicode que funciona en navegadores modernos -->
         <p>Desarrollado con ❤️ usando Flask y Jinja2</p>
     </footer>
-
 </body>
-<!-- Fin del contenido visible -->
 
 </html>
-<!-- Fin del documento HTML -->
