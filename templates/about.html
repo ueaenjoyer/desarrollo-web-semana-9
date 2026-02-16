@@ -1,0 +1,77 @@
+{# Template que hereda de base.html #}
+{% extends "base.html" %}
+
+{# Título personalizado para la página "Acerca de" #}
+{% block title %}Acerca de - TechByte{% endblock %}
+
+{# Contenido específico de esta página #}
+{% block content %}
+<h1>📖 Acerca de TechByte</h1>
+
+<!-- Historia de la empresa -->
+<section>
+    <h2>Nuestra Historia</h2>
+    <p>
+        TechByte nació en 2020 con una misión clara: democratizar el acceso a la tecnología
+        de vanguardia. Comenzamos como una pequeña tienda online y hoy somos uno de los
+        distribuidores de gadgets más confiables del país.
+    </p>
+    <p>
+        Nuestra pasión por la tecnología nos impulsa a seleccionar cuidadosamente cada
+        producto que ofrecemos, asegurándonos de que nuestros clientes reciban solo lo mejor.
+    </p>
+</section>
+
+<!-- Misión y Visión -->
+<section style="margin-top: 2rem;">
+    <h2>Misión y Visión</h2>
+
+    <div class="product-card">
+        <h3>🎯 Nuestra Misión</h3>
+        <p>
+            Proporcionar productos tecnológicos de alta calidad a precios competitivos,
+            con un servicio al cliente excepcional que supere las expectativas.
+        </p>
+    </div>
+
+    <div class="product-card">
+        <h3>🔭 Nuestra Visión</h3>
+        <p>
+            Ser la tienda de tecnología líder en América Latina, reconocida por nuestra
+            innovación, confiabilidad y compromiso con la satisfacción del cliente.
+        </p>
+    </div>
+</section>
+
+<!-- Valores -->
+<section style="margin-top: 2rem;">
+    <h2>Nuestros Valores</h2>
+    <ul style="line-height: 2;">
+        <li><strong>Calidad:</strong> Solo ofrecemos productos que nosotros mismos usaríamos.</li>
+        <li><strong>Transparencia:</strong> Información clara y honesta sobre cada producto.</li>
+        <li><strong>Innovación:</strong> Siempre buscamos las últimas tendencias tecnológicas.</li>
+        <li><strong>Servicio:</strong> El cliente es nuestra prioridad número uno.</li>
+        <li><strong>Sostenibilidad:</strong> Comprometidos con prácticas comerciales responsables.</li>
+    </ul>
+</section>
+
+<!-- Equipo -->
+<section style="margin-top: 2rem;">
+    <h2>Nuestro Equipo</h2>
+    <p>
+        Contamos con un equipo de expertos apasionados por la tecnología, desde ingenieros
+        hasta especialistas en atención al cliente, todos trabajando juntos para brindarte
+        la mejor experiencia de compra.
+    </p>
+</section>
+
+<!-- Llamado a la acción -->
+<section style="margin-top: 2rem; text-align: center; padding: 2rem; background-color: #f0f0f0; border-radius: 10px;">
+    <h2>¿Quieres saber más?</h2>
+    <p>Contáctanos y descubre cómo podemos ayudarte</p>
+    <a href="{{ url_for('contacto') }}"
+        style="display: inline-block; margin-top: 1rem; padding: 1rem 2rem; background-color: #667eea; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+        Contactar 📧
+    </a>
+</section>
+{% endblock %}

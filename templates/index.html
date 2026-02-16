@@ -1,212 +1,309 @@
-<!DOCTYPE html>
-<html lang="es">
+{# ============================================
+COMENTARIOS JINJA2
+============================================
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TechByte - Tienda de Gadgets</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+Los comentarios en Jinja2 se escriben así: {# comentario #}
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            padding: 20px;
-        }
+Diferencia con comentarios HTML:
+- HTML: <!-- comentario --> (se ven en el código fuente de la página)
+- Jinja2: {# comentario #} (NO aparecen en el HTML final)
 
-        .container {
-            max-width: 900px;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 3rem;
-            border-radius: 30px;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            animation: fadeIn 0.6s ease-in;
-        }
+Usa comentarios Jinja2 para explicar la lógica de las plantillas
+Usa comentarios HTML para explicar el contenido
+============================================ #}
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
+{# ============================================
+HERENCIA DE PLANTILLAS - extends
+============================================
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+{% extends "base.html" %}
 
-        .header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
+Esta línea DEBE ser la PRIMERA del archivo (antes de cualquier HTML).
 
-        .logo {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            animation: pulse 2s infinite;
-        }
+¿Qué hace?
+Le dice a Jinja2: "Esta página hereda de base.html"
 
-        @keyframes pulse {
+Resultado:
+- Esta página tendrá el header, nav y footer de base.html
+- Solo necesitas definir el contenido único de esta página
 
-            0%,
-            100% {
-                transform: scale(1);
-            }
+Piensa en esto como:
+- base.html = la estructura de una casa (paredes, techo, piso)
+- index.html = la decoración interior (muebles, cuadros, etc.)
+============================================ #}
+{% extends "base.html" %}
 
-            50% {
-                transform: scale(1.05);
-            }
-        }
+{# ============================================
+BLOQUE DE TÍTULO
+============================================
 
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-        }
+{% block title %} ... {% endblock %}
 
-        .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            font-weight: 400;
-        }
+Este bloque SOBRESCRIBE el título definido en base.html
 
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
+En base.html dice:
+<title>{% block title %}TechByte - Tienda de Gadgets{% endblock %}</title>
 
-        .feature-card {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 1.5rem;
-            border-radius: 15px;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
+Aquí lo reemplazamos con:
+<title>Inicio - TechByte</title>
 
-        .feature-card:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        }
+Resultado en el navegador:
+- La pestaña mostrará "Inicio - TechByte"
+- Cada página puede tener su propio título
+============================================ #}
+{% block title %}Inicio - TechByte{% endblock %}
 
-        .feature-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
+{# ============================================
+BLOQUE DE CONTENIDO PRINCIPAL
+============================================
 
-        .feature-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
+{% block content %} ... {% endblock %}
 
-        .feature-description {
-            opacity: 0.85;
-            line-height: 1.6;
-        }
+TODO lo que escribas aquí se insertará en el:
+<div class="container">
+    de base.html
 
-        .status-badge {
-            display: inline-block;
-            margin-top: 2rem;
-            padding: 0.75rem 1.5rem;
-            background: linear-gradient(135deg, #48bb78, #38a169);
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            box-shadow: 0 4px 15px rgba(72, 187, 120, 0.4);
-            animation: glow 2s infinite;
-        }
+    Este es el contenido ÚNICO de la página de inicio.
+    Otras páginas (about.html, productos.html) tendrán
+    contenido diferente en su {% block content %}
+    ============================================ #}
+    {% block content %}
 
-        @keyframes glow {
+    <!-- ============================================
+     SECCIÓN DE BIENVENIDA
+     ============================================
+     <section> es una etiqueta HTML5 semántica que agrupa
+     contenido relacionado temáticamente.
+     
+     Buena práctica: Usa <section> para dividir tu página
+     en secciones lógicas (bienvenida, características, etc.)
+============================================ -->
+    <section>
+        <!-- <h1> es el título principal de esta sección -->
+        <!-- Usa emojis para hacer la página más visual y amigable -->
+        <h1>🎉 Bienvenido a TechByte</h1>
 
-            0%,
-            100% {
-                box-shadow: 0 4px 15px rgba(72, 187, 120, 0.4);
-            }
+        <!-- <p> es un párrafo de texto -->
+        <!-- Cada <p> crea un nuevo párrafo con espacio arriba y abajo -->
+        <p>Tu tienda de confianza para los mejores gadgets y tecnología del mercado.</p>
+        <p>Ofrecemos productos de calidad con garantía y envío rápido a todo el país.</p>
+    </section>
 
-            50% {
-                box-shadow: 0 4px 25px rgba(72, 187, 120, 0.6);
-            }
-        }
+    <!-- ============================================
+     SECCIÓN DE CARACTERÍSTICAS
+     ============================================
+     Esta sección muestra las ventajas de la tienda
+     usando tarjetas (product-card)
+============================================ -->
+    <section style="margin-top: 2rem;">
+        <!-- style="margin-top: 2rem;" agrega espacio arriba de esta sección
+         
+         ¿Qué es "rem"?
+         - rem = "root em" (unidad relativa al tamaño de fuente base)
+         - 1rem = tamaño de fuente del <html> (normalmente 16px)
+         - 2rem = 32px (2 × 16px)
+         
+         ¿Por qué usar rem en vez de px?
+         - Se adapta si el usuario cambia el tamaño de fuente
+         - Más accesible para personas con problemas de visión
+    -->
 
-        .cta-section {
-            text-align: center;
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-        }
+        <h2>¿Por qué elegir TechByte?</h2>
+        <!-- <h2> es un subtítulo (menos importante que <h1>) -->
 
-        .cta-text {
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
-            opacity: 0.9;
-        }
+        <!-- ============================================
+         TARJETAS DE CARACTERÍSTICAS
+         ============================================
+         Cada <div class="product-card"> es una tarjeta
+         
+         La clase "product-card" está definida en styles.css
+         y le da formato (borde, padding, hover effect, etc.)
+         
+         ¿Qué es una "clase"?
+         - Es como una etiqueta que le pones a elementos HTML
+         - En CSS defines cómo se ven los elementos con esa clase
+         - Puedes reutilizar la misma clase en muchos elementos
+         
+         Ejemplo:
+         HTML: <div class="product-card">
+         CSS:  .product-card { border: 1px solid #ddd; }
+         
+         Todos los <div> con class="product-card" tendrán ese borde
+    ============================================ -->
 
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-            }
-
-            .subtitle {
-                font-size: 1rem;
-            }
-
-            .container {
-                padding: 2rem;
-            }
-        }
-    </style>
-</head>
-
-<body>
-    <div class="container">
-        <div class="header">
-            <div class="logo">🚀</div>
-            <h1>Bienvenido a TechByte</h1>
-            <p class="subtitle">Tu tienda de gadgets tecnológicos de última generación</p>
+        <div class="product-card">
+            <!-- <h3> es un subtítulo de tercer nivel -->
+            <!-- Jerarquía: h1 > h2 > h3 > h4 > h5 > h6 -->
+            <h3>✅ Productos Originales</h3>
+            <p>Todos nuestros productos son 100% originales y cuentan con garantía oficial.</p>
         </div>
 
-        <div class="features">
-            <div class="feature-card">
-                <div class="feature-icon">💻</div>
-                <div class="feature-title">Laptops Premium</div>
-                <div class="feature-description">Las mejores marcas y modelos para trabajo y gaming</div>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">📱</div>
-                <div class="feature-title">Smartphones</div>
-                <div class="feature-description">Última tecnología en dispositivos móviles</div>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">🎧</div>
-                <div class="feature-title">Audio Premium</div>
-                <div class="feature-description">Auriculares y altavoces de alta fidelidad</div>
-            </div>
+        <div class="product-card">
+            <h3>🚚 Envío Rápido</h3>
+            <p>Entrega en 24-48 horas en la mayoría de las ciudades principales.</p>
         </div>
 
-        <div class="cta-section">
-            <p class="cta-text">Explora nuestro catálogo completo</p>
-            <div class="status-badge">✨ Sistema Online y Funcionando</div>
+        <div class="product-card">
+            <h3>💳 Pago Seguro</h3>
+            <p>Múltiples métodos de pago con tecnología de encriptación de última generación.</p>
         </div>
-    </div>
-</body>
 
-</html>
+        <div class="product-card">
+            <h3>🎧 Soporte 24/7</h3>
+            <p>Nuestro equipo está disponible para ayudarte en cualquier momento.</p>
+        </div>
+    </section>
+
+    <!-- ============================================
+     SECCIÓN DE LLAMADO A LA ACCIÓN (CTA)
+     ============================================
+     CTA = Call To Action (Llamado a la Acción)
+     
+     Es una sección que invita al usuario a hacer algo
+     (en este caso, ver los productos)
+============================================ -->
+    <section
+        style="margin-top: 2rem; text-align: center; padding: 2rem; background-color: #f0f0f0; border-radius: 10px;">
+        <!-- ============================================
+         ESTILOS EN LÍNEA (inline styles)
+         ============================================
+         style="..." permite agregar CSS directamente en el HTML
+         
+         Propiedades usadas aquí:
+         - margin-top: 2rem → espacio arriba
+         - text-align: center → centra el texto
+         - padding: 2rem → espacio interno (32px en todos los lados)
+         - background-color: #f0f0f0 → color de fondo gris claro
+         - border-radius: 10px → esquinas redondeadas
+         
+         ¿Cuándo usar estilos en línea?
+         - Para estilos únicos que solo se usan una vez
+         - Para prototipar rápido
+         
+         ¿Cuándo NO usarlos?
+         - Si el estilo se repite en varios lugares
+         - Mejor usar una clase en styles.css
+         
+         Nota: Los estilos en línea tienen PRIORIDAD sobre
+         los estilos en CSS (son más "fuertes")
+    ============================================ -->
+
+        <h2>¿Listo para comprar?</h2>
+        <p>Explora nuestro catálogo completo de productos</p>
+
+        <!-- ============================================
+         ENLACE CON url_for() Y ESTILOS
+         ============================================
+         Este <a> es un enlace que parece un botón
+         (gracias a los estilos CSS)
+    ============================================ -->
+        <a href="{{ url_for('productos') }}"
+            style="display: inline-block; margin-top: 1rem; padding: 1rem 2rem; background-color: #667eea; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+            <!-- ============================================
+             EXPLICACIÓN DE LOS ESTILOS DEL BOTÓN:
+             ============================================
+             
+             - display: inline-block
+               Permite que el <a> tenga padding y se comporte como un bloque
+               (por defecto, <a> es inline y no respeta padding vertical)
+             
+             - margin-top: 1rem
+               Espacio arriba del botón (16px)
+             
+             - padding: 1rem 2rem
+               Espacio interno: 1rem arriba/abajo, 2rem izquierda/derecha
+               Hace que el botón sea más grande y fácil de clickear
+             
+             - background-color: #667eea
+               Color de fondo morado/azul
+               #667eea es un código hexadecimal de color
+               # = indica que es hexadecimal
+               66 = cantidad de rojo (0-FF)
+               7e = cantidad de verde (0-FF)
+               ea = cantidad de azul (0-FF)
+             
+             - color: white
+               Color del texto blanco
+               (también puedes usar #ffffff o #fff)
+             
+             - text-decoration: none
+               Quita el subrayado del enlace
+               (por defecto, los <a> están subrayados)
+             
+             - border-radius: 5px
+               Esquinas redondeadas de 5 píxeles
+               Hace que el botón se vea más moderno
+             
+             - font-weight: bold
+               Texto en negrita
+               Hace que el botón sea más visible
+        ============================================ -->
+            Ver Productos 🛍️
+        </a>
+    </section>
+
+    {# ============================================
+    FIN DEL BLOQUE DE CONTENIDO
+    ============================================
+
+    {% endblock %}
+
+    Esta línea cierra el bloque de contenido.
+
+    TODO lo que está entre:
+    {% block content %} y {% endblock %}
+    se insertará en base.html
+
+    Después de {% endblock %}, NO puedes escribir más HTML
+    porque ya saliste del bloque.
+    ============================================ #}
+    {% endblock %}
+
+    {# ============================================
+    RESUMEN DE CONCEPTOS APRENDIDOS
+    ============================================
+
+    1. HERENCIA:
+    - {% extends "base.html" %} hereda la estructura
+    - Solo defines el contenido único de esta página
+
+    2. BLOQUES:
+    - {% block title %} para el título
+    - {% block content %} para el contenido
+    - Puedes sobrescribir bloques de la plantilla padre
+
+    3. ETIQUETAS HTML:
+    - <section>: agrupa contenido relacionado
+        - <h1>, <h2>, <h3>: títulos de diferentes niveles
+                    - <p>: párrafos de texto
+                        -
+                    <div>: contenedor genérico
+                        - <a>: enlaces (hyperlinks)
+
+                            4. CLASES CSS:
+                            - class="product-card" aplica estilos definidos en CSS
+                            - Puedes reutilizar clases en múltiples elementos
+
+                            5. ESTILOS EN LÍNEA:
+                            - style="..." para estilos únicos
+                            - Útil para prototipar, pero mejor usar CSS para estilos repetidos
+
+                            6. url_for():
+                            - {{ url_for('productos') }} genera la URL de la página de productos
+                            - Más seguro que escribir href="/productos" manualmente
+
+                            7. UNIDADES CSS:
+                            - rem: relativo al tamaño de fuente base (accesible)
+                            - px: píxeles (tamaño fijo)
+                            - %: porcentaje (relativo al contenedor padre)
+
+                            8. COLORES:
+                            - Nombres: white, black, red, blue
+                            - Hexadecimal: #667eea, #f0f0f0
+                            - RGB: rgb(102, 126, 234)
+
+                            ¿Qué sigue?
+                            - Mira about.html para ver otra página con herencia
+                            - Revisa styles.css para entender los estilos
+                            - Experimenta cambiando colores, textos y estilos
+                            ============================================ #}

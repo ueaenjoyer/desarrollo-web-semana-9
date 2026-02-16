@@ -1,0 +1,114 @@
+{# Template de productos que hereda de base.html #}
+{% extends "base.html" %}
+
+{% block title %}Productos - TechByte{% endblock %}
+
+{% block content %}
+<h1>📦 Nuestros Productos</h1>
+<p>Explora nuestra selección de gadgets y tecnología de última generación.</p>
+
+<!-- Categoría: Laptops -->
+<section style="margin-top: 2rem;">
+    <h2>💻 Laptops</h2>
+
+    <div class="product-card">
+        <h3>MacBook Pro 16" M3</h3>
+        <p><strong>Precio:</strong> $2,499.00</p>
+        <p>
+            El portátil más potente de Apple con chip M3, pantalla Liquid Retina XDR
+            y hasta 22 horas de batería. Ideal para profesionales creativos.
+        </p>
+        <p><em>Estado: En stock ✅</em></p>
+    </div>
+
+    <div class="product-card">
+        <h3>Dell XPS 15</h3>
+        <p><strong>Precio:</strong> $1,799.00</p>
+        <p>
+            Laptop premium con procesador Intel Core i7, 16GB RAM, SSD 512GB y
+            pantalla InfinityEdge 4K. Perfecta para trabajo y entretenimiento.
+        </p>
+        <p><em>Estado: En stock ✅</em></p>
+    </div>
+
+    <div class="product-card">
+        <h3>ASUS ROG Zephyrus G14</h3>
+        <p><strong>Precio:</strong> $1,599.00</p>
+        <p>
+            Laptop gaming compacta con AMD Ryzen 9, NVIDIA RTX 4060 y pantalla
+            QHD 165Hz. Potencia y portabilidad en un solo dispositivo.
+        </p>
+        <p><em>Estado: Últimas unidades ⚠️</em></p>
+    </div>
+</section>
+
+<!-- Categoría: Smartphones -->
+<section style="margin-top: 2rem;">
+    <h2>📱 Smartphones</h2>
+
+    <div class="product-card">
+        <h3>iPhone 15 Pro Max</h3>
+        <p><strong>Precio:</strong> $1,199.00</p>
+        <p>
+            El smartphone más avanzado de Apple con chip A17 Pro, cámara de 48MP
+            y diseño en titanio. Disponible en 256GB y 512GB.
+        </p>
+        <p><em>Estado: En stock ✅</em></p>
+    </div>
+
+    <div class="product-card">
+        <h3>Samsung Galaxy S24 Ultra</h3>
+        <p><strong>Precio:</strong> $1,299.00</p>
+        <p>
+            Potencia Android con S Pen integrado, cámara de 200MP y pantalla
+            Dynamic AMOLED 2X. La mejor experiencia Galaxy hasta ahora.
+        </p>
+        <p><em>Estado: En stock ✅</em></p>
+    </div>
+
+    <div class="product-card">
+        <h3>Google Pixel 8 Pro</h3>
+        <p><strong>Precio:</strong> $999.00</p>
+        <p>
+            Fotografía computacional de Google al máximo nivel con chip Tensor G3.
+            Android puro con 7 años de actualizaciones garantizadas.
+        </p>
+        <p><em>Estado: Próximamente 🔜</em></p>
+    </div>
+</section>
+
+<!-- Categoría: Audio -->
+<section style="margin-top: 2rem;">
+    <h2>🎧 Audio Premium</h2>
+
+    <div class="product-card">
+        <h3>Sony WH-1000XM5</h3>
+        <p><strong>Precio:</strong> $399.00</p>
+        <p>
+            Auriculares con la mejor cancelación de ruido del mercado. Audio Hi-Res,
+            30 horas de batería y comodidad excepcional.
+        </p>
+        <p><em>Estado: En stock ✅</em></p>
+    </div>
+
+    <div class="product-card">
+        <h3>AirPods Pro (2ª generación)</h3>
+        <p><strong>Precio:</strong> $249.00</p>
+        <p>
+            Cancelación activa de ruido, audio espacial personalizado y estuche
+            con carga MagSafe. Perfectos para el ecosistema Apple.
+        </p>
+        <p><em>Estado: En stock ✅</em></p>
+    </div>
+</section>
+
+<!-- Nota informativa -->
+<section
+    style="margin-top: 2rem; padding: 1.5rem; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 5px;">
+    <p><strong>💡 Nota:</strong> Todos los precios incluyen IVA. Los productos cuentan con garantía oficial del
+        fabricante.</p>
+    <p>Para más información sobre un producto específico, visita nuestra página de
+        <a href="{{ url_for('contacto') }}" style="color: #667eea; font-weight: bold;">contacto</a>.
+    </p>
+</section>
+{% endblock %}

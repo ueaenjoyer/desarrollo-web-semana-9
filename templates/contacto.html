@@ -1,0 +1,119 @@
+{# Template de contacto que hereda de base.html #}
+{% extends "base.html" %}
+
+{% block title %}Contacto - TechByte{% endblock %}
+
+{% block content %}
+<h1>📧 Contáctanos</h1>
+<p>¿Tienes preguntas? Estamos aquí para ayudarte. Contáctanos por cualquiera de estos medios:</p>
+
+<!-- Información de contacto -->
+<section style="margin-top: 2rem;">
+    <h2>Información de Contacto</h2>
+
+    <div class="product-card">
+        <h3>📞 Teléfono</h3>
+        <p><strong>Ventas:</strong> +1 (555) 123-4567</p>
+        <p><strong>Soporte Técnico:</strong> +1 (555) 123-4568</p>
+        <p><strong>Horario:</strong> Lunes a Viernes, 9:00 AM - 6:00 PM</p>
+    </div>
+
+    <div class="product-card">
+        <h3>✉️ Email</h3>
+        <p><strong>Ventas:</strong> ventas@techbyte.com</p>
+        <p><strong>Soporte:</strong> soporte@techbyte.com</p>
+        <p><strong>General:</strong> info@techbyte.com</p>
+        <p><em>Respondemos en menos de 24 horas</em></p>
+    </div>
+
+    <div class="product-card">
+        <h3>🏢 Oficina Principal</h3>
+        <p>Av. Tecnología 123, Piso 5</p>
+        <p>Ciudad Tech, CP 12345</p>
+        <p>País</p>
+    </div>
+
+    <div class="product-card">
+        <h3>🌐 Redes Sociales</h3>
+        <p>
+            <strong>Facebook:</strong> /TechByteOficial<br>
+            <strong>Instagram:</strong> @techbyte<br>
+            <strong>Twitter:</strong> @techbyte<br>
+            <strong>LinkedIn:</strong> /company/techbyte
+        </p>
+    </div>
+</section>
+
+<!-- Horarios de atención -->
+<section style="margin-top: 2rem;">
+    <h2>⏰ Horarios de Atención</h2>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+        <thead>
+            <tr style="background-color: #667eea; color: white;">
+                <th style="padding: 1rem; text-align: left; border: 1px solid #ddd;">Departamento</th>
+                <th style="padding: 1rem; text-align: left; border: 1px solid #ddd;">Horario</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="padding: 0.75rem; border: 1px solid #ddd;">Ventas</td>
+                <td style="padding: 0.75rem; border: 1px solid #ddd;">Lun - Vie: 9:00 AM - 6:00 PM</td>
+            </tr>
+            <tr style="background-color: #f9f9f9;">
+                <td style="padding: 0.75rem; border: 1px solid #ddd;">Soporte Técnico</td>
+                <td style="padding: 0.75rem; border: 1px solid #ddd;">24/7 (Chat en línea)</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.75rem; border: 1px solid #ddd;">Tienda Física</td>
+                <td style="padding: 0.75rem; border: 1px solid #ddd;">Lun - Sáb: 10:00 AM - 8:00 PM</td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+<!-- Preguntas frecuentes -->
+<section style="margin-top: 2rem;">
+    <h2>❓ Preguntas Frecuentes</h2>
+
+    <div class="product-card">
+        <h3>¿Cuál es el tiempo de entrega?</h3>
+        <p>
+            Normalmente entregamos en 24-48 horas en ciudades principales.
+            Para zonas rurales, el tiempo puede extenderse a 3-5 días hábiles.
+        </p>
+    </div>
+
+    <div class="product-card">
+        <h3>¿Qué métodos de pago aceptan?</h3>
+        <p>
+            Aceptamos tarjetas de crédito/débito (Visa, Mastercard, American Express),
+            PayPal, transferencias bancarias y pago contra entrega (sujeto a disponibilidad).
+        </p>
+    </div>
+
+    <div class="product-card">
+        <h3>¿Tienen garantía los productos?</h3>
+        <p>
+            Sí, todos nuestros productos cuentan con garantía oficial del fabricante.
+            Además, ofrecemos 30 días de devolución sin preguntas.
+        </p>
+    </div>
+</section>
+
+<!-- Formulario de contacto (placeholder) -->
+<section style="margin-top: 2rem; padding: 2rem; background-color: #f0f0f0; border-radius: 10px;">
+    <h2>📝 Formulario de Contacto</h2>
+    <p style="color: #666; font-style: italic;">
+        El formulario de contacto estará disponible próximamente.
+        Por ahora, puedes contactarnos directamente por email o teléfono.
+    </p>
+    <p style="margin-top: 1rem;">
+        <strong>Próximas funcionalidades:</strong>
+    </p>
+    <ul>
+        <li>Formulario de contacto interactivo</li>
+        <li>Chat en vivo</li>
+        <li>Sistema de tickets de soporte</li>
+    </ul>
+</section>
+{% endblock %}
