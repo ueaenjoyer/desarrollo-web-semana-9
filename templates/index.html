@@ -1,309 +1,44 @@
-{# ============================================
-COMENTARIOS JINJA2
-============================================
-
-Los comentarios en Jinja2 se escriben así: {# comentario #}
-
-Diferencia con comentarios HTML:
-- HTML: <!-- comentario --> (se ven en el código fuente de la página)
-- Jinja2: {# comentario #} (NO aparecen en el HTML final)
-
-Usa comentarios Jinja2 para explicar la lógica de las plantillas
-Usa comentarios HTML para explicar el contenido
-============================================ #}
-
-{# ============================================
-HERENCIA DE PLANTILLAS - extends
-============================================
-
 {% extends "base.html" %}
 
-Esta línea DEBE ser la PRIMERA del archivo (antes de cualquier HTML).
-
-¿Qué hace?
-Le dice a Jinja2: "Esta página hereda de base.html"
-
-Resultado:
-- Esta página tendrá el header, nav y footer de base.html
-- Solo necesitas definir el contenido único de esta página
-
-Piensa en esto como:
-- base.html = la estructura de una casa (paredes, techo, piso)
-- index.html = la decoración interior (muebles, cuadros, etc.)
-============================================ #}
-{% extends "base.html" %}
-
-{# ============================================
-BLOQUE DE TÍTULO
-============================================
-
-{% block title %} ... {% endblock %}
-
-Este bloque SOBRESCRIBE el título definido en base.html
-
-En base.html dice:
-<title>{% block title %}TechByte - Tienda de Gadgets{% endblock %}</title>
-
-Aquí lo reemplazamos con:
-<title>Inicio - TechByte</title>
-
-Resultado en el navegador:
-- La pestaña mostrará "Inicio - TechByte"
-- Cada página puede tener su propio título
-============================================ #}
 {% block title %}Inicio - TechByte{% endblock %}
 
-{# ============================================
-BLOQUE DE CONTENIDO PRINCIPAL
-============================================
+{% block content %}
+<section>
+    <h1>🎉 Bienvenido a TechByte</h1>
+    <p>Tu tienda de confianza para los mejores gadgets y tecnología del mercado.</p>
+    <p>Ofrecemos productos de calidad con garantía y envío rápido a todo el país.</p>
+</section>
 
-{% block content %} ... {% endblock %}
+<section style="margin-top: 2rem;">
+    <h2>¿Por qué elegir TechByte?</h2>
 
-TODO lo que escribas aquí se insertará en el:
-<div class="container">
-    de base.html
+    <div class="product-card">
+        <h3>✅ Productos Originales</h3>
+        <p>Todos nuestros productos son 100% originales y cuentan con garantía oficial.</p>
+    </div>
 
-    Este es el contenido ÚNICO de la página de inicio.
-    Otras páginas (about.html, productos.html) tendrán
-    contenido diferente en su {% block content %}
-    ============================================ #}
-    {% block content %}
+    <div class="product-card">
+        <h3>🚚 Envío Rápido</h3>
+        <p>Entrega en 24-48 horas en la mayoría de las ciudades principales.</p>
+    </div>
 
-    <!-- ============================================
-     SECCIÓN DE BIENVENIDA
-     ============================================
-     <section> es una etiqueta HTML5 semántica que agrupa
-     contenido relacionado temáticamente.
-     
-     Buena práctica: Usa <section> para dividir tu página
-     en secciones lógicas (bienvenida, características, etc.)
-============================================ -->
-    <section>
-        <!-- <h1> es el título principal de esta sección -->
-        <!-- Usa emojis para hacer la página más visual y amigable -->
-        <h1>🎉 Bienvenido a TechByte</h1>
+    <div class="product-card">
+        <h3>💳 Pago Seguro</h3>
+        <p>Múltiples métodos de pago con tecnología de encriptación de última generación.</p>
+    </div>
 
-        <!-- <p> es un párrafo de texto -->
-        <!-- Cada <p> crea un nuevo párrafo con espacio arriba y abajo -->
-        <p>Tu tienda de confianza para los mejores gadgets y tecnología del mercado.</p>
-        <p>Ofrecemos productos de calidad con garantía y envío rápido a todo el país.</p>
-    </section>
+    <div class="product-card">
+        <h3>🎧 Soporte 24/7</h3>
+        <p>Nuestro equipo está disponible para ayudarte en cualquier momento.</p>
+    </div>
+</section>
 
-    <!-- ============================================
-     SECCIÓN DE CARACTERÍSTICAS
-     ============================================
-     Esta sección muestra las ventajas de la tienda
-     usando tarjetas (product-card)
-============================================ -->
-    <section style="margin-top: 2rem;">
-        <!-- style="margin-top: 2rem;" agrega espacio arriba de esta sección
-         
-         ¿Qué es "rem"?
-         - rem = "root em" (unidad relativa al tamaño de fuente base)
-         - 1rem = tamaño de fuente del <html> (normalmente 16px)
-         - 2rem = 32px (2 × 16px)
-         
-         ¿Por qué usar rem en vez de px?
-         - Se adapta si el usuario cambia el tamaño de fuente
-         - Más accesible para personas con problemas de visión
-    -->
-
-        <h2>¿Por qué elegir TechByte?</h2>
-        <!-- <h2> es un subtítulo (menos importante que <h1>) -->
-
-        <!-- ============================================
-         TARJETAS DE CARACTERÍSTICAS
-         ============================================
-         Cada <div class="product-card"> es una tarjeta
-         
-         La clase "product-card" está definida en styles.css
-         y le da formato (borde, padding, hover effect, etc.)
-         
-         ¿Qué es una "clase"?
-         - Es como una etiqueta que le pones a elementos HTML
-         - En CSS defines cómo se ven los elementos con esa clase
-         - Puedes reutilizar la misma clase en muchos elementos
-         
-         Ejemplo:
-         HTML: <div class="product-card">
-         CSS:  .product-card { border: 1px solid #ddd; }
-         
-         Todos los <div> con class="product-card" tendrán ese borde
-    ============================================ -->
-
-        <div class="product-card">
-            <!-- <h3> es un subtítulo de tercer nivel -->
-            <!-- Jerarquía: h1 > h2 > h3 > h4 > h5 > h6 -->
-            <h3>✅ Productos Originales</h3>
-            <p>Todos nuestros productos son 100% originales y cuentan con garantía oficial.</p>
-        </div>
-
-        <div class="product-card">
-            <h3>🚚 Envío Rápido</h3>
-            <p>Entrega en 24-48 horas en la mayoría de las ciudades principales.</p>
-        </div>
-
-        <div class="product-card">
-            <h3>💳 Pago Seguro</h3>
-            <p>Múltiples métodos de pago con tecnología de encriptación de última generación.</p>
-        </div>
-
-        <div class="product-card">
-            <h3>🎧 Soporte 24/7</h3>
-            <p>Nuestro equipo está disponible para ayudarte en cualquier momento.</p>
-        </div>
-    </section>
-
-    <!-- ============================================
-     SECCIÓN DE LLAMADO A LA ACCIÓN (CTA)
-     ============================================
-     CTA = Call To Action (Llamado a la Acción)
-     
-     Es una sección que invita al usuario a hacer algo
-     (en este caso, ver los productos)
-============================================ -->
-    <section
-        style="margin-top: 2rem; text-align: center; padding: 2rem; background-color: #f0f0f0; border-radius: 10px;">
-        <!-- ============================================
-         ESTILOS EN LÍNEA (inline styles)
-         ============================================
-         style="..." permite agregar CSS directamente en el HTML
-         
-         Propiedades usadas aquí:
-         - margin-top: 2rem → espacio arriba
-         - text-align: center → centra el texto
-         - padding: 2rem → espacio interno (32px en todos los lados)
-         - background-color: #f0f0f0 → color de fondo gris claro
-         - border-radius: 10px → esquinas redondeadas
-         
-         ¿Cuándo usar estilos en línea?
-         - Para estilos únicos que solo se usan una vez
-         - Para prototipar rápido
-         
-         ¿Cuándo NO usarlos?
-         - Si el estilo se repite en varios lugares
-         - Mejor usar una clase en styles.css
-         
-         Nota: Los estilos en línea tienen PRIORIDAD sobre
-         los estilos en CSS (son más "fuertes")
-    ============================================ -->
-
-        <h2>¿Listo para comprar?</h2>
-        <p>Explora nuestro catálogo completo de productos</p>
-
-        <!-- ============================================
-         ENLACE CON url_for() Y ESTILOS
-         ============================================
-         Este <a> es un enlace que parece un botón
-         (gracias a los estilos CSS)
-    ============================================ -->
-        <a href="{{ url_for('productos') }}"
-            style="display: inline-block; margin-top: 1rem; padding: 1rem 2rem; background-color: #667eea; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
-            <!-- ============================================
-             EXPLICACIÓN DE LOS ESTILOS DEL BOTÓN:
-             ============================================
-             
-             - display: inline-block
-               Permite que el <a> tenga padding y se comporte como un bloque
-               (por defecto, <a> es inline y no respeta padding vertical)
-             
-             - margin-top: 1rem
-               Espacio arriba del botón (16px)
-             
-             - padding: 1rem 2rem
-               Espacio interno: 1rem arriba/abajo, 2rem izquierda/derecha
-               Hace que el botón sea más grande y fácil de clickear
-             
-             - background-color: #667eea
-               Color de fondo morado/azul
-               #667eea es un código hexadecimal de color
-               # = indica que es hexadecimal
-               66 = cantidad de rojo (0-FF)
-               7e = cantidad de verde (0-FF)
-               ea = cantidad de azul (0-FF)
-             
-             - color: white
-               Color del texto blanco
-               (también puedes usar #ffffff o #fff)
-             
-             - text-decoration: none
-               Quita el subrayado del enlace
-               (por defecto, los <a> están subrayados)
-             
-             - border-radius: 5px
-               Esquinas redondeadas de 5 píxeles
-               Hace que el botón se vea más moderno
-             
-             - font-weight: bold
-               Texto en negrita
-               Hace que el botón sea más visible
-        ============================================ -->
-            Ver Productos 🛍️
-        </a>
-    </section>
-
-    {# ============================================
-    FIN DEL BLOQUE DE CONTENIDO
-    ============================================
-
-    {% endblock %}
-
-    Esta línea cierra el bloque de contenido.
-
-    TODO lo que está entre:
-    {% block content %} y {% endblock %}
-    se insertará en base.html
-
-    Después de {% endblock %}, NO puedes escribir más HTML
-    porque ya saliste del bloque.
-    ============================================ #}
-    {% endblock %}
-
-    {# ============================================
-    RESUMEN DE CONCEPTOS APRENDIDOS
-    ============================================
-
-    1. HERENCIA:
-    - {% extends "base.html" %} hereda la estructura
-    - Solo defines el contenido único de esta página
-
-    2. BLOQUES:
-    - {% block title %} para el título
-    - {% block content %} para el contenido
-    - Puedes sobrescribir bloques de la plantilla padre
-
-    3. ETIQUETAS HTML:
-    - <section>: agrupa contenido relacionado
-        - <h1>, <h2>, <h3>: títulos de diferentes niveles
-                    - <p>: párrafos de texto
-                        -
-                    <div>: contenedor genérico
-                        - <a>: enlaces (hyperlinks)
-
-                            4. CLASES CSS:
-                            - class="product-card" aplica estilos definidos en CSS
-                            - Puedes reutilizar clases en múltiples elementos
-
-                            5. ESTILOS EN LÍNEA:
-                            - style="..." para estilos únicos
-                            - Útil para prototipar, pero mejor usar CSS para estilos repetidos
-
-                            6. url_for():
-                            - {{ url_for('productos') }} genera la URL de la página de productos
-                            - Más seguro que escribir href="/productos" manualmente
-
-                            7. UNIDADES CSS:
-                            - rem: relativo al tamaño de fuente base (accesible)
-                            - px: píxeles (tamaño fijo)
-                            - %: porcentaje (relativo al contenedor padre)
-
-                            8. COLORES:
-                            - Nombres: white, black, red, blue
-                            - Hexadecimal: #667eea, #f0f0f0
-                            - RGB: rgb(102, 126, 234)
-
-                            ¿Qué sigue?
-                            - Mira about.html para ver otra página con herencia
-                            - Revisa styles.css para entender los estilos
-                            - Experimenta cambiando colores, textos y estilos
-                            ============================================ #}
+<section style="margin-top: 2rem; text-align: center; padding: 2rem; background-color: #f0f0f0; border-radius: 10px;">
+    <h2>¿Listo para comprar?</h2>
+    <p>Explora nuestro catálogo completo de productos</p>
+    <a href="{{ url_for('productos') }}"
+        style="display: inline-block; margin-top: 1rem; padding: 1rem 2rem; background-color: #667eea; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+        Ver Productos 🛍️
+    </a>
+</section>
+{% endblock %}
