@@ -3,13 +3,16 @@
 # ============================================
 
 # Flask: El framework web principal que usamos para crear la aplicación
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for, flash
 
-# render_template: Función que permite renderizar plantillas HTML con Jinja2
-# En lugar de retornar texto plano (strings), usamos render_template para:
-# 1. Separar la lógica (Python) de la presentación (HTML)
-# 2. Reutilizar código HTML mediante herencia de plantillas
-# 3. Pasar datos dinámicos desde Python a las plantillas
+# render_template: Renderiza plantillas HTML con Jinja2
+# request: Accede a los datos enviados por el usuario (formularios, parámetros)
+# redirect: Redirige al usuario a otra ruta
+# url_for: Genera URLs a partir del nombre de la función
+# flash: Muestra mensajes temporales al usuario (éxito, error, etc.)
+
+# Importamos las clases POO del módulo models.py (Semana 11)
+from models import Producto, Inventario, DatabaseManager
 
 
 # ============================================
@@ -20,27 +23,23 @@ from flask import Flask, render_template
 # __name__ le dice a Flask dónde buscar recursos (templates, static, etc.)
 app = Flask(__name__)
 
+# Clave secreta necesaria para usar flash messages
+app.secret_key = "techbyte_semana11_secret_key"
+
+# Inicializamos la base de datos SQLite y el inventario con POO
+db_manager = DatabaseManager()
+inventario = Inventario(db_manager)
+
 
 # ============================================
-# RUTAS (ROUTES) Y VISTAS (VIEWS)
+# RUTAS ORIGINALES (Semanas 9 y 10)
 # ============================================
-
-# Una RUTA define qué URL activará una función específica
-# Una VISTA es la función que se ejecuta cuando se accede a esa ruta
 
 @app.route("/")  # Decorador que asocia la URL "/" con la función index()
 def index():
     """
-    Página principal de TechByte - Tienda de Gadgets
-    
-    Esta es la vista para la ruta raíz ("/") de la aplicación.
-    Cuando un usuario visita http://localhost:5000/, esta función se ejecuta.
-    
-    render_template("index.html") hace lo siguiente:
-    1. Busca el archivo "index.html" en la carpeta "templates/"
-    2. Procesa las directivas de Jinja2 ({% extends %}, {% block %}, etc.)
-    3. Genera el HTML final combinando base.html e index.html
-    4. Retorna ese HTML al navegador del usuario
+    Página principal de TechByte - Tienda de Gadgets.
+    Renderiza la plantilla index.html.
     """
     return render_template("index.html")
 
@@ -48,16 +47,8 @@ def index():
 @app.route("/about")  # Ruta para la página "Acerca de"
 def about():
     """
-    Página "Acerca de" - Información sobre TechByte
-    
-    Esta vista renderiza la plantilla about.html que contiene:
-    - Historia de la empresa
-    - Misión y visión
-    - Valores corporativos
-    - Información del equipo
-    
-    Nota: El nombre de la función (about) se usa en url_for('about')
-    en las plantillas para generar enlaces a esta página.
+    Página "Acerca de" - Información sobre TechByte.
+    Renderiza la plantilla about.html.
     """
     return render_template("about.html")
 
@@ -65,74 +56,200 @@ def about():
 @app.route("/productos")  # Ruta para el catálogo de productos
 def productos():
     """
-    Página de Productos - Catálogo completo de gadgets
-    
-    Actualmente muestra productos estáticos definidos en productos.html.
-    
-    En futuras versiones, esta función podría:
-    1. Consultar una base de datos para obtener productos
-    2. Pasar esos datos a la plantilla usando:
-       return render_template("productos.html", productos=lista_productos)
-    3. La plantilla usaría un bucle {% for %} para mostrar cada producto
-    
-    Ejemplo de cómo pasar datos a una plantilla:
-    productos_db = [
-        {"nombre": "Laptop X", "precio": 999},
-        {"nombre": "Phone Y", "precio": 699}
-    ]
-    return render_template("productos.html", productos=productos_db)
+    Página de Productos - Catálogo completo de gadgets.
+
+    SEMANA 11: Ahora consulta la base de datos SQLite para obtener
+    los productos reales y los pasa a la plantilla usando una LISTA.
+    La plantilla usa {% for %} de Jinja2 para renderizar cada producto.
     """
-    return render_template("productos.html")
+    # Obtenemos todos los productos desde el DICCIONARIO del inventario
+    # mostrar_todos() retorna una LISTA de diccionarios
+    lista_productos = inventario.mostrar_todos()
+
+    # Pasamos la LISTA a la plantilla para renderizado dinámico
+    return render_template("productos.html", productos=lista_productos)
 
 
 @app.route("/contacto")  # Ruta para la página de contacto
 def contacto():
     """
-    Página de Contacto - Información de contacto y formulario
-    
-    Renderiza la plantilla contacto.html que incluye:
-    - Información de contacto (teléfono, email, dirección)
-    - Horarios de atención
-    - Preguntas frecuentes
-    - Placeholder para formulario de contacto (próximamente)
-    
-    En el futuro, esta ruta podría manejar el envío de formularios:
-    @app.route("/contacto", methods=["GET", "POST"])
-    def contacto():
-        if request.method == "POST":
-            # Procesar datos del formulario
-            nombre = request.form.get("nombre")
-            email = request.form.get("email")
-            # Enviar email, guardar en DB, etc.
-        return render_template("contacto.html")
+    Página de Contacto - Información de contacto y formulario.
+    Renderiza la plantilla contacto.html.
     """
     return render_template("contacto.html")
 
 
-@app.route("/producto/<nombre>")  # Ruta DINÁMICA con parámetro
-def producto(nombre):
+# ============================================
+# RUTAS CRUD DEL INVENTARIO (Semana 11)
+# Implementan operaciones CRUD conectadas a SQLite
+# ============================================
+
+@app.route("/inventario")
+def inventario_lista():
     """
-    Ruta dinámica para mostrar información de productos individuales
-    
-    El parámetro <nombre> en la ruta captura parte de la URL.
-    Por ejemplo:
-    - /producto/laptop → nombre = "laptop"
-    - /producto/iphone → nombre = "iphone"
-    
-    Esta función actualmente retorna HTML plano (no usa plantilla).
-    Es un ejemplo de ruta dinámica que quedó de la semana anterior.
-    
-    MEJORA FUTURA: Crear una plantilla producto_detalle.html y hacer:
-    return render_template("producto_detalle.html", nombre_producto=nombre)
-    
-    Luego en la plantilla podrías usar: {{ nombre_producto }}
+    Muestra todos los productos del inventario en una tabla HTML.
+
+    Usa el método mostrar_todos() de la clase Inventario que retorna
+    una LISTA de diccionarios. Cada diccionario contiene los datos
+    de un producto obtenidos desde SQLite.
     """
-    return f"""
-    <h1>🔍 Producto: {nombre}</h1>
-    <p>Estado: <strong>Disponible en TechByte</strong></p>
-    <p>Este producto está listo para ser agregado a tu carrito.</p>
-    <a href="/">← Volver al inicio</a>
+    # Recargamos datos desde la DB para asegurar consistencia
+    inventario.recargar()
+
+    # Obtenemos la LISTA de todos los productos
+    productos_lista = inventario.mostrar_todos()
+
+    # Pasamos la TUPLA de categorías para filtros en la plantilla
+    categorias = Producto.CATEGORIAS_VALIDAS
+
+    return render_template("inventario.html",
+                           productos=productos_lista,
+                           categorias=categorias)
+
+
+@app.route("/inventario/agregar", methods=["GET", "POST"])
+def inventario_agregar():
     """
+    Formulario para agregar un nuevo producto.
+
+    GET: Muestra el formulario vacío.
+    POST: Procesa los datos del formulario y agrega el producto
+          a la base de datos SQLite usando el método agregar() de Inventario.
+    """
+    if request.method == "POST":
+        # Obtenemos los datos del formulario (request.form es un diccionario)
+        nombre = request.form.get("nombre", "").strip()
+        categoria = request.form.get("categoria", "Otros")
+        precio = request.form.get("precio", 0)
+        cantidad = request.form.get("cantidad", 0)
+        descripcion = request.form.get("descripcion", "").strip()
+
+        # Validaciones básicas
+        if not nombre:
+            flash("❌ El nombre del producto es obligatorio.", "error")
+            return render_template("inventario_form.html",
+                                   categorias=Producto.CATEGORIAS_VALIDAS,
+                                   accion="Agregar")
+
+        try:
+            precio = float(precio)
+            cantidad = int(cantidad)
+        except ValueError:
+            flash("❌ Precio o cantidad inválidos.", "error")
+            return render_template("inventario_form.html",
+                                   categorias=Producto.CATEGORIAS_VALIDAS,
+                                   accion="Agregar")
+
+        # Usamos el método agregar() de la clase Inventario
+        # Internamente guarda en el DICCIONARIO, CONJUNTO y SQLite
+        producto = inventario.agregar(nombre, categoria, precio, cantidad, descripcion)
+
+        flash(f"✅ Producto '{producto.nombre}' agregado con éxito (ID: {producto.id}).", "success")
+        return redirect(url_for("inventario_lista"))
+
+    # GET: Mostramos el formulario vacío
+    return render_template("inventario_form.html",
+                           categorias=Producto.CATEGORIAS_VALIDAS,
+                           accion="Agregar")
+
+
+@app.route("/inventario/editar/<int:id>", methods=["GET", "POST"])
+def inventario_editar(id):
+    """
+    Formulario para editar un producto existente.
+
+    GET: Muestra el formulario con los datos actuales del producto.
+    POST: Procesa los datos actualizados y los guarda en SQLite.
+
+    Usa búsqueda O(1) en el DICCIONARIO del inventario por ID.
+    """
+    # Buscamos el producto en el DICCIONARIO (O(1))
+    producto = inventario.obtener_por_id(id)
+
+    if not producto:
+        flash(f"❌ No se encontró producto con ID {id}.", "error")
+        return redirect(url_for("inventario_lista"))
+
+    if request.method == "POST":
+        nombre = request.form.get("nombre", "").strip()
+        categoria = request.form.get("categoria", "Otros")
+        precio = request.form.get("precio", 0)
+        cantidad = request.form.get("cantidad", 0)
+        descripcion = request.form.get("descripcion", "").strip()
+
+        if not nombre:
+            flash("❌ El nombre del producto es obligatorio.", "error")
+            return render_template("inventario_form.html",
+                                   categorias=Producto.CATEGORIAS_VALIDAS,
+                                   producto=producto,
+                                   accion="Editar")
+
+        try:
+            precio = float(precio)
+            cantidad = int(cantidad)
+        except ValueError:
+            flash("❌ Precio o cantidad inválidos.", "error")
+            return render_template("inventario_form.html",
+                                   categorias=Producto.CATEGORIAS_VALIDAS,
+                                   producto=producto,
+                                   accion="Editar")
+
+        # Actualizamos usando el método de la clase Inventario
+        # Sincroniza DICCIONARIO en memoria + SQLite
+        if inventario.actualizar(id, nombre, categoria, precio, cantidad, descripcion):
+            flash(f"✅ Producto '{nombre}' actualizado correctamente.", "success")
+        else:
+            flash("❌ Error al actualizar el producto.", "error")
+
+        return redirect(url_for("inventario_lista"))
+
+    # GET: Mostramos el formulario con datos ya cargados
+    return render_template("inventario_form.html",
+                           categorias=Producto.CATEGORIAS_VALIDAS,
+                           producto=producto,
+                           accion="Editar")
+
+
+@app.route("/inventario/eliminar/<int:id>", methods=["POST"])
+def inventario_eliminar(id):
+    """
+    Elimina un producto del inventario y de la base de datos SQLite.
+
+    Solo acepta método POST por seguridad (evita eliminaciones accidentales por URL).
+    Usa el método eliminar() de Inventario que remueve del
+    DICCIONARIO, CONJUNTO e SQLite.
+    """
+    producto = inventario.obtener_por_id(id)
+    nombre_producto = producto["nombre"] if producto else f"ID {id}"
+
+    # Eliminamos del DICCIONARIO, CONJUNTO y SQLite
+    if inventario.eliminar(id):
+        flash(f"✅ Producto '{nombre_producto}' eliminado correctamente.", "success")
+    else:
+        flash(f"❌ No se pudo eliminar el producto con ID {id}.", "error")
+
+    return redirect(url_for("inventario_lista"))
+
+
+@app.route("/inventario/buscar")
+def inventario_buscar():
+    """
+    Busca productos por nombre.
+
+    Toma el parámetro 'q' de la URL (?q=término) y busca en la base
+    de datos usando LIKE de SQL. Retorna una LISTA de resultados.
+    """
+    termino = request.args.get("q", "").strip()
+    resultados = []
+
+    if termino:
+        # buscar_por_nombre() retorna una LISTA de diccionarios
+        resultados = inventario.buscar_por_nombre(termino)
+
+    return render_template("inventario.html",
+                           productos=resultados,
+                           categorias=Producto.CATEGORIAS_VALIDAS,
+                           busqueda=termino)
 
 
 # ============================================
@@ -141,24 +258,9 @@ def producto(nombre):
 
 if __name__ == "__main__":
     """
-    Este bloque se ejecuta solo cuando ejecutas este archivo directamente
-    (python app.py), no cuando se importa como módulo.
-    
+    Este bloque se ejecuta solo cuando ejecutas este archivo directamente.
+
     app.run() inicia el servidor de desarrollo de Flask.
-    
-    Parámetros importantes:
-    - debug=True: Habilita el modo de depuración
-      * El servidor se reinicia automáticamente cuando cambias el código
-      * Muestra errores detallados en el navegador (útil para desarrollo)
-      * NUNCA uses debug=True en producción (es un riesgo de seguridad)
-    
-    - host='0.0.0.0': Hace que el servidor sea accesible desde otras máquinas
-    - port=5000: Puerto en el que corre el servidor (por defecto es 5000)
-    
-    Para ejecutar:
-    1. Abre la terminal en la carpeta del proyecto
-    2. Activa el entorno virtual: .venv\\Scripts\\activate (Windows)
-    3. Ejecuta: python app.py
-    4. Abre el navegador en: http://localhost:5000
+    - debug=True: Reinicia automáticamente al cambiar código y muestra errores.
     """
     app.run(debug=True)

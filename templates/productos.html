@@ -1,4 +1,5 @@
 {# Template de productos que hereda de base.html #}
+{# Semana 11: Ahora renderiza productos dinámicamente desde SQLite #}
 {% extends "base.html" %}
 
 {% block title %}Productos - TechByte{% endblock %}
@@ -7,6 +8,35 @@
 <h1>📦 Nuestros Productos</h1>
 <p>Explora nuestra selección de gadgets y tecnología de última generación.</p>
 
+{# ===== Productos DINÁMICOS desde la base de datos SQLite ===== #}
+{# Se reciben como una LISTA de diccionarios desde app.py #}
+{% if productos and productos|length > 0 %}
+<section style="margin-top: 2rem;">
+    <h2>🛍️ Catálogo de Productos ({{ productos|length }} disponibles)</h2>
+
+    {% for producto in productos %}
+    <div class="product-card">
+        <h3>{{ producto.nombre }}</h3>
+        <p><strong>Categoría:</strong> <span class="badge badge-{{ producto.categoria|lower|replace(' ', '') }}">{{
+                producto.categoria }}</span></p>
+        <p><strong>Precio:</strong> ${{ "%.2f"|format(producto.precio) }}</p>
+        <p>{{ producto.descripcion if producto.descripcion else 'Sin descripción disponible.' }}</p>
+        <p>
+            <em>Estado:
+                {% if producto.cantidad > 5 %}
+                En stock ✅ ({{ producto.cantidad }} unidades)
+                {% elif producto.cantidad > 0 %}
+                Últimas unidades ⚠️ ({{ producto.cantidad }} disponibles)
+                {% else %}
+                Agotado ❌
+                {% endif %}
+            </em>
+        </p>
+    </div>
+    {% endfor %}
+</section>
+{% else %}
+{# ===== Productos ESTÁTICOS (cuando la DB está vacía) ===== #}
 <!-- Categoría: Laptops -->
 <section style="margin-top: 2rem;">
     <h2>💻 Laptops</h2>
@@ -101,6 +131,7 @@
         <p><em>Estado: En stock ✅</em></p>
     </div>
 </section>
+{% endif %}
 
 <!-- Nota informativa -->
 <section
@@ -109,6 +140,9 @@
         fabricante.</p>
     <p>Para más información sobre un producto específico, visita nuestra página de
         <a href="{{ url_for('contacto') }}" style="color: #667eea; font-weight: bold;">contacto</a>.
+    </p>
+    <p>¿Eres administrador? Gestiona el inventario desde la
+        <a href="{{ url_for('inventario_lista') }}" style="color: #667eea; font-weight: bold;">página de inventario</a>.
     </p>
 </section>
 {% endblock %}

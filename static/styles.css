@@ -1,17 +1,20 @@
 /* ============================================
    ESTILOS GENERALES PARA TIENDAGADGET
+   Semana 11 - POO + SQLite + CRUD
    ============================================ */
 
 /* Reset básico y configuración de fuentes */
 * {
     margin: 0;
     padding: 0;
-    box-sizing: border-box; /* Hace que padding y border se incluyan en el ancho/alto total */
+    box-sizing: border-box;
+    /* Hace que padding y border se incluyan en el ancho/alto total */
 }
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.6; /* Mejora la legibilidad del texto */
+    line-height: 1.6;
+    /* Mejora la legibilidad del texto */
     color: #333;
     background-color: #f4f4f4;
 }
@@ -20,76 +23,98 @@ body {
    HEADER - Encabezado de la página
    ============================================ */
 header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Gradiente moderno */
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    /* Gradiente moderno */
     color: white;
     padding: 1.5rem 0;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Sombra sutil para profundidad */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* Sombra sutil para profundidad */
 }
 
 header h1 {
     text-align: center;
     font-size: 2.5rem;
     font-weight: 700;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.2); /* Sombra en el texto para resaltar */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    /* Sombra en el texto para resaltar */
 }
 
 /* ============================================
    NAVEGACIÓN - Menú principal
    ============================================ */
 nav {
-    background-color: #2c3e50; /* Color oscuro para contraste */
+    background-color: #2c3e50;
+    /* Color oscuro para contraste */
     padding: 1rem 0;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 nav ul {
-    list-style: none; /* Quita los bullets de la lista */
-    display: flex; /* Flexbox para alinear horizontalmente */
-    justify-content: center; /* Centra los elementos */
-    gap: 2rem; /* Espacio entre elementos del menú */
-    flex-wrap: wrap; /* Permite que se ajuste en pantallas pequeñas */
+    list-style: none;
+    /* Quita los bullets de la lista */
+    display: flex;
+    /* Flexbox para alinear horizontalmente */
+    justify-content: center;
+    /* Centra los elementos */
+    gap: 2rem;
+    /* Espacio entre elementos del menú */
+    flex-wrap: wrap;
+    /* Permite que se ajuste en pantallas pequeñas */
 }
 
 nav a {
     color: white;
-    text-decoration: none; /* Quita el subrayado de los enlaces */
+    text-decoration: none;
+    /* Quita el subrayado de los enlaces */
     font-weight: 500;
     padding: 0.5rem 1rem;
-    border-radius: 5px; /* Bordes redondeados */
-    transition: all 0.3s ease; /* Transición suave para efectos hover */
+    border-radius: 5px;
+    /* Bordes redondeados */
+    transition: all 0.3s ease;
+    /* Transición suave para efectos hover */
 }
 
 /* Efecto hover en los enlaces de navegación */
 nav a:hover {
-    background-color: #667eea; /* Cambia el fondo al pasar el mouse */
-    transform: translateY(-2px); /* Efecto de elevación */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    background-color: #667eea;
+    /* Cambia el fondo al pasar el mouse */
+    transform: translateY(-2px);
+    /* Efecto de elevación */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* ============================================
    CONTENEDOR PRINCIPAL
    ============================================ */
 .container {
-    max-width: 1200px; /* Ancho máximo para contenido */
-    margin: 2rem auto; /* Centra el contenedor */
+    max-width: 1200px;
+    /* Ancho máximo para contenido */
+    margin: 2rem auto;
+    /* Centra el contenedor */
     padding: 2rem;
     background-color: white;
-    border-radius: 10px; /* Bordes redondeados */
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Sombra para profundidad */
-    min-height: 400px; /* Altura mínima para evitar footer pegado arriba */
+    border-radius: 10px;
+    /* Bordes redondeados */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* Sombra para profundidad */
+    min-height: 400px;
+    /* Altura mínima para evitar footer pegado arriba */
 }
 
 /* ============================================
    TIPOGRAFÍA - Títulos y párrafos
    ============================================ */
-h1, h2, h3 {
+h1,
+h2,
+h3 {
     color: #2c3e50;
     margin-bottom: 1rem;
 }
 
 h1 {
     font-size: 2.5rem;
-    border-bottom: 3px solid #667eea; /* Línea decorativa debajo del título */
+    border-bottom: 3px solid #667eea;
+    /* Línea decorativa debajo del título */
     padding-bottom: 0.5rem;
 }
 
@@ -104,13 +129,15 @@ h3 {
 
 p {
     margin-bottom: 1rem;
-    line-height: 1.8; /* Mayor espacio entre líneas para mejor lectura */
+    line-height: 1.8;
+    /* Mayor espacio entre líneas para mejor lectura */
 }
 
 /* ============================================
    LISTAS
    ============================================ */
-ul, ol {
+ul,
+ol {
     margin-left: 2rem;
     margin-bottom: 1rem;
 }
@@ -133,8 +160,10 @@ li {
 
 /* Efecto hover en tarjetas */
 .product-card:hover {
-    transform: translateY(-5px); /* Eleva la tarjeta */
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15); /* Sombra más pronunciada */
+    transform: translateY(-5px);
+    /* Eleva la tarjeta */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    /* Sombra más pronunciada */
 }
 
 .product-card h3 {
@@ -150,7 +179,8 @@ footer {
     color: white;
     text-align: center;
     padding: 2rem 0;
-    margin-top: 3rem; /* Espacio superior para separar del contenido */
+    margin-top: 3rem;
+    /* Espacio superior para separar del contenido */
 }
 
 footer p {
@@ -164,8 +194,398 @@ footer a {
 }
 
 footer a:hover {
-    text-decoration: underline; /* Subraya al pasar el mouse */
+    text-decoration: underline;
+    /* Subraya al pasar el mouse */
     color: #764ba2;
+}
+
+/* ============================================
+   MENSAJES FLASH (Semana 11)
+   Mensajes de éxito/error para operaciones CRUD
+   ============================================ */
+.flash-message {
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+    border-left: 5px solid;
+    animation: fadeIn 0.3s ease;
+}
+
+.flash-success {
+    background-color: #d4edda;
+    color: #155724;
+    border-left-color: #28a745;
+}
+
+.flash-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-left-color: #dc3545;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+   BARRA DE ACCIONES DEL INVENTARIO (Semana 11)
+   ============================================ */
+.inventario-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.search-form {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.search-input {
+    padding: 0.6rem 1rem;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    min-width: 250px;
+    transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+    border-color: #667eea;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+}
+
+.search-results-info {
+    padding: 0.8rem 1rem;
+    background-color: #e8f0fe;
+    border-radius: 6px;
+    color: #1a56db;
+    margin-bottom: 1rem;
+}
+
+/* ============================================
+   BOTONES (Semana 11)
+   Estilos para botones de acción CRUD
+   ============================================ */
+.btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.btn-add {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+}
+
+.btn-add:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+}
+
+.btn-edit {
+    background: linear-gradient(135deg, #ffc107, #fd7e14);
+    color: white;
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+}
+
+.btn-edit:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(255, 193, 7, 0.4);
+}
+
+.btn-delete {
+    background: linear-gradient(135deg, #dc3545, #e74c3c);
+    color: white;
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+}
+
+.btn-delete:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(220, 53, 69, 0.4);
+}
+
+.btn-search {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+}
+
+.btn-search:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.btn-save {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    font-size: 1rem;
+    padding: 0.7rem 2rem;
+}
+
+.btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn-cancel {
+    background-color: #6c757d;
+    color: white;
+    font-size: 1rem;
+    padding: 0.7rem 2rem;
+}
+
+.btn-cancel:hover {
+    background-color: #5a6268;
+}
+
+/* ============================================
+   TABLA DE INVENTARIO (Semana 11)
+   Muestra todos los productos en formato tabla
+   ============================================ */
+.table-responsive {
+    overflow-x: auto;
+    margin: 1rem 0;
+}
+
+.inventory-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.inventory-table thead {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+}
+
+.inventory-table th {
+    padding: 0.8rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.inventory-table td {
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+}
+
+.inventory-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.inventory-table tbody tr:hover {
+    background-color: #f0f4ff;
+}
+
+.inventory-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.inventory-table tbody tr:nth-child(even):hover {
+    background-color: #f0f4ff;
+}
+
+.precio {
+    font-weight: 600;
+    color: #28a745;
+}
+
+.descripcion-cell {
+    max-width: 200px;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.actions-cell {
+    white-space: nowrap;
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+}
+
+/* ============================================
+   BADGES DE CATEGORÍA (Semana 11)
+   ============================================ */
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: white;
+}
+
+.badge-laptops {
+    background-color: #667eea;
+}
+
+.badge-smartphones {
+    background-color: #e74c3c;
+}
+
+.badge-audio {
+    background-color: #f39c12;
+}
+
+.badge-accesorios {
+    background-color: #2ecc71;
+}
+
+.badge-gaming {
+    background-color: #9b59b6;
+}
+
+.badge-tablets {
+    background-color: #1abc9c;
+}
+
+.badge-wearables {
+    background-color: #e67e22;
+}
+
+.badge-otros {
+    background-color: #95a5a6;
+}
+
+/* ============================================
+   INDICADORES DE STOCK (Semana 11)
+   ============================================ */
+.stock {
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.stock-ok {
+    color: #28a745;
+}
+
+.stock-low {
+    color: #ffc107;
+}
+
+.stock-out {
+    color: #dc3545;
+}
+
+/* ============================================
+   FORMULARIO CRUD (Semana 11)
+   ============================================ */
+.crud-form {
+    max-width: 600px;
+    margin: 1.5rem auto;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #667eea;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+}
+
+.form-row {
+    display: flex;
+    gap: 1rem;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    justify-content: center;
+}
+
+/* ============================================
+   ESTADO VACÍO Y TOTALES (Semana 11)
+   ============================================ */
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: #888;
+}
+
+.empty-state p {
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+}
+
+.total-info {
+    text-align: right;
+    color: #666;
+    font-size: 0.95rem;
+    margin-top: 1rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #eee;
 }
 
 /* ============================================
@@ -173,24 +593,55 @@ footer a:hover {
    ============================================ */
 @media (max-width: 768px) {
     header h1 {
-        font-size: 1.8rem; /* Reduce tamaño en móviles */
+        font-size: 1.8rem;
+        /* Reduce tamaño en móviles */
     }
-    
+
     nav ul {
-        flex-direction: column; /* Menú vertical en móviles */
+        flex-direction: column;
+        /* Menú vertical en móviles */
         gap: 0.5rem;
     }
-    
+
     .container {
         padding: 1rem;
         margin: 1rem;
     }
-    
+
     h1 {
         font-size: 1.8rem;
     }
-    
+
     h2 {
         font-size: 1.5rem;
+    }
+
+    /* Responsive para inventario (Semana 11) */
+    .inventario-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-input {
+        min-width: 100%;
+    }
+
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .actions-cell {
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+
+    .inventory-table {
+        font-size: 0.85rem;
+    }
+
+    .inventory-table th,
+    .inventory-table td {
+        padding: 0.5rem;
     }
 }
