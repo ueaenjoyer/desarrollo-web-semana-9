@@ -1,0 +1,51 @@
+{# ============================================ #}
+{# datos_form.html - Formulario Editar SQLAlchemy #}
+{# Semana 12 - TechByte #}
+{# ============================================ #}
+{% extends "base.html" %}
+
+{% block title %}{{ accion }} Dato - TechByte{% endblock %}
+
+{% block content %}
+<h1>✏️ {{ accion }} Registro (SQLAlchemy)</h1>
+
+{# ===== Mensajes Flash ===== #}
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="flash-message flash-{{ category }}">
+    {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<form method="POST" class="crud-form" action="{{ url_for('datos.editar_dato', id=producto.id) }}">
+
+    <div class="form-group">
+        <label for="nombre">📦 Nombre del Producto *</label>
+        <input type="text" id="nombre" name="nombre" required value="{{ producto.nombre }}">
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label for="precio">💰 Precio ($) *</label>
+            <input type="number" id="precio" name="precio" step="0.01" min="0" required value="{{ producto.precio }}">
+        </div>
+        <div class="form-group">
+            <label for="cantidad">🔢 Cantidad *</label>
+            <input type="number" id="cantidad" name="cantidad" min="0" required value="{{ producto.cantidad }}">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="descripcion">📄 Descripción</label>
+        <textarea id="descripcion" name="descripcion" rows="3">{{ producto.descripcion }}</textarea>
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-save">💾 Guardar Cambios</button>
+        <a href="{{ url_for('datos.datos_index') }}" class="btn btn-cancel">❌ Cancelar</a>
+    </div>
+</form>
+{% endblock %}

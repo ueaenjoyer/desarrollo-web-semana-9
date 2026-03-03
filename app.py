@@ -11,8 +11,17 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 # url_for: Genera URLs a partir del nombre de la función
 # flash: Muestra mensajes temporales al usuario (éxito, error, etc.)
 
+import os  # Para construir la ruta absoluta al archivo de base de datos
+
 # Importamos las clases POO del módulo models.py (Semana 11)
 from models import Producto, Inventario, DatabaseManager
+
+# Importamos el Blueprint de persistencia (Semana 12)
+# Un Blueprint es un conjunto de rutas que se registra en la aplicación
+from inventario.inventario import datos_bp
+
+# Importamos la instancia de SQLAlchemy y la función de inicialización
+from inventario.bd import db, init_app as init_sqlalchemy
 
 
 # ============================================
@@ -24,15 +33,32 @@ from models import Producto, Inventario, DatabaseManager
 app = Flask(__name__)
 
 # Clave secreta necesaria para usar flash messages
-app.secret_key = "techbyte_semana11_secret_key"
+app.secret_key = "techbyte_semana12_secret_key"
 
-# Inicializamos la base de datos SQLite y el inventario con POO
+# ============================================
+# CONFIGURACIÓN SQLALCHEMY (Semana 12)
+# Conecta Flask con SQLite usando el ORM SQLAlchemy
+# ============================================
+# Ruta absoluta al archivo de base de datos SQLite
+# Se guarda en la misma carpeta del proyecto para facilitar su gestión
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'tiendagadget.db')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Ahorra memoria desactivando el tracking
+
+# Registramos el Blueprint de datos con todas sus rutas (/datos/...)
+# El Blueprint agrupa las rutas de persistencia en un módulo separado
+app.register_blueprint(datos_bp)
+
+# Inicializamos SQLAlchemy con la app y creamos las tablas del ORM
+init_sqlalchemy(app)
+
+# Inicializamos la base de datos SQLite (Semana 11) y el inventario con POO
 db_manager = DatabaseManager()
 inventario = Inventario(db_manager)
 
 
 # ============================================
-# RUTAS ORIGINALES (Semanas 9 y 10)
+# RUTAS ORIGINALES (Semanas 9, 10, 11)
 # ============================================
 
 @app.route("/")  # Decorador que asocia la URL "/" con la función index()
