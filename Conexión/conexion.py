@@ -6,8 +6,9 @@
 # Este archivo contiene la configuración de conexión entre
 # Flask y la base de datos PostgreSQL en Supabase.
 #
-# Las credenciales se leen desde el archivo .env para
-# mantener la seguridad (nunca se suben a GitHub).
+# Soporta dos modos de configuración:
+#   1. DATABASE_URL (variable única) → para Render, Vercel, etc.
+#   2. Variables individuales (user, password, host, port, dbname) → local con .env
 # ============================================
 
 import os
@@ -15,24 +16,30 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
 
-# Cargamos las variables de entorno desde el archivo .env
-# load_dotenv() busca el archivo .env en la carpeta del proyecto
+# Cargamos las variables de entorno desde el archivo .env (solo funciona en local)
+# En Render/producción las variables se configuran en el dashboard
 load_dotenv()
 
 # ============================================
 # CONFIGURACIÓN DE LA BASE DE DATOS
-# Variables individuales leídas desde .env
 # ============================================
 
+# Opción 1: DATABASE_URL completa (preferida para hosting como Render)
+DATABASE_URL = os.getenv('DATABASE_URL')
+
+# Opción 2: Variables individuales (para desarrollo local con .env)
 DB_USER = os.getenv('user')
 DB_PASSWORD = os.getenv('password')
 DB_HOST = os.getenv('host')
 DB_PORT = os.getenv('port', '5432')
 DB_NAME = os.getenv('dbname', 'postgres')
 
+# Si no hay DATABASE_URL, la construimos desde las variables individuales
+if not DATABASE_URL and DB_HOST:
+    DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+
 # URI para SQLAlchemy (Flask-SQLAlchemy)
-# SQLAlchemy usa esta URI para conectarse automáticamente
-SQLALCHEMY_DATABASE_URI = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+SQLALCHEMY_DATABASE_URI = DATABASE_URL
 
 
 def get_connection():
@@ -44,25 +51,15 @@ def get_connection():
 
     Returns:
         psycopg2.connection: Conexión activa a la base de datos PostgreSQL.
-
-    Raises:
-        Exception: Si no se puede conectar (credenciales inválidas, etc.)
     """
-    if not DB_HOST or DB_HOST == 'PEGA_AQUI_EL_HOST_DEL_SESSION_POOLER':
+    if not DATABASE_URL:
         raise ValueError(
-            "❌ No se encontró el host de la base de datos en el archivo .env\n"
-            "   Asegúrate de configurar el archivo .env con tus credenciales de Supabase.\n"
-            "   Ve a Supabase → Project Settings → Database → Session Pooler → View parameters"
+            "❌ No se encontró configuración de base de datos.\n"
+            "   LOCAL: Configura el archivo .env con user, password, host, port, dbname\n"
+            "   RENDER: Configura DATABASE_URL en Environment Variables del dashboard"
         )
 
-    conn = psycopg2.connect(
-        user=DB_USER,
-        password=DB_PASSWORD,
-        host=DB_HOST,
-        port=DB_PORT,
-        dbname=DB_NAME,
-        cursor_factory=RealDictCursor
-    )
+    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
     return conn
 
 
