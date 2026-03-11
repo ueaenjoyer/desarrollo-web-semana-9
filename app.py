@@ -23,6 +23,12 @@ from inventario.inventario import datos_bp
 # Importamos la instancia de SQLAlchemy y la función de inicialización
 from inventario.bd import db, init_app as init_sqlalchemy
 
+# Importamos el Blueprint de usuarios (Semana 13)
+from usuarios import usuarios_bp, init_usuarios
+
+# Importamos la configuración de conexión a PostgreSQL (Semana 13)
+from Conexión.conexion import SQLALCHEMY_DATABASE_URI
+
 
 # ============================================
 # CONFIGURACIÓN DE LA APLICACIÓN
@@ -33,28 +39,32 @@ from inventario.bd import db, init_app as init_sqlalchemy
 app = Flask(__name__)
 
 # Clave secreta necesaria para usar flash messages
-app.secret_key = "techbyte_semana12_secret_key"
+app.secret_key = "techbyte_semana13_secret_key"
 
 # ============================================
-# CONFIGURACIÓN SQLALCHEMY (Semana 12)
-# Conecta Flask con SQLite usando el ORM SQLAlchemy
+# CONFIGURACIÓN SQLALCHEMY (Semana 13)
+# Conecta Flask con PostgreSQL (Supabase) usando SQLAlchemy ORM
+# La URI se lee desde el archivo .env a través de Conexión/conexion.py
 # ============================================
-# Ruta absoluta al archivo de base de datos SQLite
-# Se guarda en la misma carpeta del proyecto para facilitar su gestión
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'tiendagadget.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Ahorra memoria desactivando el tracking
 
 # Registramos el Blueprint de datos con todas sus rutas (/datos/...)
 # El Blueprint agrupa las rutas de persistencia en un módulo separado
 app.register_blueprint(datos_bp)
 
+# Registramos el Blueprint de usuarios con todas sus rutas (/usuarios/...)
+app.register_blueprint(usuarios_bp)
+
 # Inicializamos SQLAlchemy con la app y creamos las tablas del ORM
 init_sqlalchemy(app)
 
-# Inicializamos la base de datos SQLite (Semana 11) y el inventario con POO
+# Inicializamos la base de datos PostgreSQL (Semana 13) y el inventario con POO
 db_manager = DatabaseManager()
 inventario = Inventario(db_manager)
+
+# Inicializamos el módulo de usuarios con el db_manager
+init_usuarios(db_manager)
 
 
 # ============================================
@@ -84,7 +94,7 @@ def productos():
     """
     Página de Productos - Catálogo completo de gadgets.
 
-    SEMANA 11: Ahora consulta la base de datos SQLite para obtener
+    SEMANA 11: Ahora consulta la base de datos PostgreSQL para obtener
     los productos reales y los pasa a la plantilla usando una LISTA.
     La plantilla usa {% for %} de Jinja2 para renderizar cada producto.
     """
@@ -107,7 +117,7 @@ def contacto():
 
 # ============================================
 # RUTAS CRUD DEL INVENTARIO (Semana 11)
-# Implementan operaciones CRUD conectadas a SQLite
+# Implementan operaciones CRUD conectadas a PostgreSQL
 # ============================================
 
 @app.route("/inventario")
@@ -117,7 +127,7 @@ def inventario_lista():
 
     Usa el método mostrar_todos() de la clase Inventario que retorna
     una LISTA de diccionarios. Cada diccionario contiene los datos
-    de un producto obtenidos desde SQLite.
+    de un producto obtenidos desde PostgreSQL.
     """
     # Recargamos datos desde la DB para asegurar consistencia
     inventario.recargar()
@@ -140,7 +150,7 @@ def inventario_agregar():
 
     GET: Muestra el formulario vacío.
     POST: Procesa los datos del formulario y agrega el producto
-          a la base de datos SQLite usando el método agregar() de Inventario.
+          a la base de datos PostgreSQL usando el método agregar() de Inventario.
     """
     if request.method == "POST":
         # Obtenemos los datos del formulario (request.form es un diccionario)
@@ -167,7 +177,7 @@ def inventario_agregar():
                                    accion="Agregar")
 
         # Usamos el método agregar() de la clase Inventario
-        # Internamente guarda en el DICCIONARIO, CONJUNTO y SQLite
+        # Internamente guarda en el DICCIONARIO, CONJUNTO y PostgreSQL
         producto = inventario.agregar(nombre, categoria, precio, cantidad, descripcion)
 
         flash(f"✅ Producto '{producto.nombre}' agregado con éxito (ID: {producto.id}).", "success")
@@ -185,7 +195,7 @@ def inventario_editar(id):
     Formulario para editar un producto existente.
 
     GET: Muestra el formulario con los datos actuales del producto.
-    POST: Procesa los datos actualizados y los guarda en SQLite.
+    POST: Procesa los datos actualizados y los guarda en PostgreSQL.
 
     Usa búsqueda O(1) en el DICCIONARIO del inventario por ID.
     """
@@ -221,7 +231,7 @@ def inventario_editar(id):
                                    accion="Editar")
 
         # Actualizamos usando el método de la clase Inventario
-        # Sincroniza DICCIONARIO en memoria + SQLite
+        # Sincroniza DICCIONARIO en memoria + PostgreSQL
         if inventario.actualizar(id, nombre, categoria, precio, cantidad, descripcion):
             flash(f"✅ Producto '{nombre}' actualizado correctamente.", "success")
         else:
@@ -239,16 +249,16 @@ def inventario_editar(id):
 @app.route("/inventario/eliminar/<int:id>", methods=["POST"])
 def inventario_eliminar(id):
     """
-    Elimina un producto del inventario y de la base de datos SQLite.
+    Elimina un producto del inventario y de la base de datos PostgreSQL.
 
     Solo acepta método POST por seguridad (evita eliminaciones accidentales por URL).
     Usa el método eliminar() de Inventario que remueve del
-    DICCIONARIO, CONJUNTO e SQLite.
+    DICCIONARIO, CONJUNTO e PostgreSQL.
     """
     producto = inventario.obtener_por_id(id)
     nombre_producto = producto["nombre"] if producto else f"ID {id}"
 
-    # Eliminamos del DICCIONARIO, CONJUNTO y SQLite
+    # Eliminamos del DICCIONARIO, CONJUNTO y PostgreSQL
     if inventario.eliminar(id):
         flash(f"✅ Producto '{nombre_producto}' eliminado correctamente.", "success")
     else:
@@ -263,7 +273,7 @@ def inventario_buscar():
     Busca productos por nombre.
 
     Toma el parámetro 'q' de la URL (?q=término) y busca en la base
-    de datos usando LIKE de SQL. Retorna una LISTA de resultados.
+    de datos usando ILIKE de PostgreSQL. Retorna una LISTA de resultados.
     """
     termino = request.args.get("q", "").strip()
     resultados = []

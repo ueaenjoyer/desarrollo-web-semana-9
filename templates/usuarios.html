@@ -1,0 +1,70 @@
+{# ============================================ #}
+{# Plantilla de Usuarios - Lista CRUD          #}
+{# Semana 13 - TechByte (PostgreSQL/Supabase)  #}
+{# ============================================ #}
+{% extends "base.html" %}
+
+{% block title %}Usuarios - TechByte{% endblock %}
+
+{% block content %}
+<h1>👤 Gestión de Usuarios</h1>
+<p>Administra los usuarios del sistema TechByte. Puedes agregar, editar y eliminar usuarios.</p>
+
+{# ===== Mensajes Flash (éxito/error) ===== #}
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="flash-message flash-{{ category }}">
+    {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+{# ===== Botón agregar ===== #}
+<div class="inventario-actions">
+    <span>📊 Total: <strong>{{ usuarios|length }}</strong> usuario(s) registrado(s)</span>
+    <a href="{{ url_for('usuarios.usuarios_agregar') }}" class="btn btn-add">➕ Agregar Usuario</a>
+</div>
+
+{# ===== Tabla de usuarios ===== #}
+{% if usuarios and usuarios|length > 0 %}
+<div class="table-responsive">
+    <table class="inventory-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Correo Electrónico</th>
+                <th>Contraseña</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for usuario in usuarios %}
+            <tr>
+                <td>{{ usuario.id_usuario }}</td>
+                <td><strong>{{ usuario.nombre }}</strong></td>
+                <td>📧 {{ usuario.mail }}</td>
+                <td>🔒 {{ '*' * usuario.password|length }}</td>
+                <td class="actions-cell">
+                    <a href="{{ url_for('usuarios.usuarios_editar', id=usuario.id_usuario) }}"
+                        class="btn btn-edit" title="Editar">✏️ Editar</a>
+                    <form action="{{ url_for('usuarios.usuarios_eliminar', id=usuario.id_usuario) }}"
+                        method="POST" style="display: inline;"
+                        onsubmit="return confirm('¿Estás seguro de eliminar al usuario {{ usuario.nombre }}?')">
+                        <button type="submit" class="btn btn-delete" title="Eliminar">🗑️ Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="empty-state">
+    <p>📭 No hay usuarios registrados en el sistema.</p>
+    <a href="{{ url_for('usuarios.usuarios_agregar') }}" class="btn btn-add">➕ Agregar el primer usuario</a>
+</div>
+{% endif %}
+{% endblock %}

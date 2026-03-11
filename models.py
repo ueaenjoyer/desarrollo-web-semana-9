@@ -1,11 +1,18 @@
 # ============================================
-# MODELOS POO + CONEXIÓN SQLITE
-# Semana 11 - Sistema Avanzado de Gestión de Inventario
+# MODELOS POO + CONEXIÓN POSTGRESQL (SUPABASE)
+# Semana 13 - Sistema Avanzado de Gestión de Inventario
 # TechByte - Tienda de Gadgets
 # ============================================
+#
+# Migración de SQLite → PostgreSQL (Supabase)
+# Se usa psycopg2 como conector y las credenciales
+# se leen desde el archivo .env a través de Conexión/conexion.py
+# ============================================
 
-import sqlite3
 import os
+
+# Importamos la función de conexión desde el módulo Conexión
+from Conexión.conexion import get_connection
 
 
 # ============================================
@@ -151,42 +158,41 @@ class Producto:
 
 # ============================================
 # CLASE DATABASEMANAGER
-# Gestiona la conexión y operaciones CRUD con SQLite.
-# Crea las tablas: productos, categorias, clientes.
+# Gestiona la conexión y operaciones CRUD con PostgreSQL (Supabase).
+# Crea las tablas: productos, categorias, clientes, usuarios.
 # ============================================
 
 class DatabaseManager:
     """
-    Clase que gestiona la conexión y las operaciones CRUD con la base de datos SQLite.
+    Clase que gestiona la conexión y las operaciones CRUD con la
+    base de datos PostgreSQL en Supabase.
 
-    Crea y administra 3 tablas:
+    Semana 13: Migración de SQLite a PostgreSQL.
+    Se usa psycopg2 como conector y las credenciales se leen desde .env
+
+    Crea y administra 4 tablas:
         - productos: Almacena el inventario de la tienda.
         - categorias: Catálogo de categorías disponibles.
         - clientes: Registro de clientes de la tienda.
+        - usuarios: Usuarios del sistema (Semana 13).
     """
 
-    def __init__(self, db_path="tiendagadget.db"):
+    def __init__(self):
         """
-        Inicializa el gestor de base de datos.
-
-        Args:
-            db_path (str): Ruta al archivo de base de datos SQLite.
+        Inicializa el gestor de base de datos PostgreSQL.
+        La conexión se obtiene desde Conexión/conexion.py que lee el .env
         """
-        # Construimos la ruta absoluta al archivo DB en la carpeta del proyecto
-        self.db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), db_path)
         self.init_db()
 
     def _get_connection(self):
         """
-        Crea y retorna una conexión a la base de datos SQLite.
-        row_factory=sqlite3.Row permite acceder a columnas por nombre.
+        Crea y retorna una conexión a la base de datos PostgreSQL (Supabase).
+        Usa RealDictCursor que permite acceder a columnas por nombre.
 
         Returns:
-            sqlite3.Connection: Conexión activa a la base de datos.
+            psycopg2.connection: Conexión activa a la base de datos.
         """
-        conn = sqlite3.connect(self.db_path)
-        conn.row_factory = sqlite3.Row  # Permite acceso por nombre de columna
-        return conn
+        return get_connection()
 
     def init_db(self):
         """
@@ -197,17 +203,19 @@ class DatabaseManager:
             - productos: id, nombre, categoria, precio, cantidad, descripcion
             - categorias: id, nombre, descripcion
             - clientes: id, nombre, email, telefono, fecha_registro
+            - usuarios: id_usuario, nombre, mail, password (Semana 13)
         """
         conn = self._get_connection()
         cursor = conn.cursor()
 
         # Tabla de PRODUCTOS - Almacena el inventario
+        # SERIAL reemplaza a INTEGER PRIMARY KEY AUTOINCREMENT de SQLite
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS productos (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nombre TEXT NOT NULL,
-                categoria TEXT NOT NULL,
-                precio REAL NOT NULL,
+                id SERIAL PRIMARY KEY,
+                nombre VARCHAR(200) NOT NULL,
+                categoria VARCHAR(100) NOT NULL,
+                precio NUMERIC(10,2) NOT NULL,
                 cantidad INTEGER NOT NULL DEFAULT 0,
                 descripcion TEXT DEFAULT ''
             )
@@ -216,8 +224,8 @@ class DatabaseManager:
         # Tabla de CATEGORÍAS - Catálogo de categorías
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS categorias (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nombre TEXT NOT NULL UNIQUE,
+                id SERIAL PRIMARY KEY,
+                nombre VARCHAR(100) NOT NULL UNIQUE,
                 descripcion TEXT DEFAULT ''
             )
         ''')
@@ -225,18 +233,32 @@ class DatabaseManager:
         # Tabla de CLIENTES - Registro de clientes de la tienda
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS clientes (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nombre TEXT NOT NULL,
-                email TEXT UNIQUE,
-                telefono TEXT,
+                id SERIAL PRIMARY KEY,
+                nombre VARCHAR(200) NOT NULL,
+                email VARCHAR(200) UNIQUE,
+                telefono VARCHAR(50),
                 fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')
 
+        # ============================================
+        # TABLA DE USUARIOS - Semana 13
+        # Requerida por la tarea: usuarios(id_usuario, nombre, mail, password)
+        # ============================================
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS usuarios (
+                id_usuario SERIAL PRIMARY KEY,
+                nombre VARCHAR(200) NOT NULL,
+                mail VARCHAR(200) UNIQUE NOT NULL,
+                password VARCHAR(200) NOT NULL
+            )
+        ''')
+
         # Insertar categorías iniciales desde la tupla de Producto
+        # ON CONFLICT DO NOTHING es el equivalente PostgreSQL de INSERT OR IGNORE
         for cat in Producto.CATEGORIAS_VALIDAS:
             cursor.execute(
-                "INSERT OR IGNORE INTO categorias (nombre) VALUES (?)",
+                "INSERT INTO categorias (nombre) VALUES (%s) ON CONFLICT (nombre) DO NOTHING",
                 (cat,)
             )
 
@@ -247,7 +269,7 @@ class DatabaseManager:
 
     def insertar_producto(self, producto):
         """
-        Inserta un nuevo producto en la base de datos.
+        Inserta un nuevo producto en la base de datos PostgreSQL.
 
         Args:
             producto (Producto): Instancia de Producto a insertar.
@@ -257,13 +279,14 @@ class DatabaseManager:
         """
         conn = self._get_connection()
         cursor = conn.cursor()
+        # RETURNING id es la forma PostgreSQL de obtener el ID generado
         cursor.execute(
             """INSERT INTO productos (nombre, categoria, precio, cantidad, descripcion)
-               VALUES (?, ?, ?, ?, ?)""",
+               VALUES (%s, %s, %s, %s, %s) RETURNING id""",
             (producto.nombre, producto.categoria, producto.precio,
              producto.cantidad, producto.descripcion)
         )
-        producto_id = cursor.lastrowid
+        producto_id = cursor.fetchone()['id']
         conn.commit()
         conn.close()
         return producto_id
@@ -280,7 +303,7 @@ class DatabaseManager:
         conn = self._get_connection()
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM productos ORDER BY id")
-        # Convertimos cada fila a diccionario usando una LISTA por comprensión
+        # RealDictCursor ya retorna diccionarios directamente
         productos = [dict(row) for row in cursor.fetchall()]
         conn.close()
         return productos
@@ -297,7 +320,7 @@ class DatabaseManager:
         """
         conn = self._get_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM productos WHERE id = ?", (producto_id,))
+        cursor.execute("SELECT * FROM productos WHERE id = %s", (producto_id,))
         row = cursor.fetchone()
         conn.close()
         return dict(row) if row else None
@@ -321,8 +344,8 @@ class DatabaseManager:
         cursor = conn.cursor()
         cursor.execute(
             """UPDATE productos
-               SET nombre=?, categoria=?, precio=?, cantidad=?, descripcion=?
-               WHERE id=?""",
+               SET nombre=%s, categoria=%s, precio=%s, cantidad=%s, descripcion=%s
+               WHERE id=%s""",
             (nombre, categoria, float(precio), int(cantidad), descripcion, producto_id)
         )
         actualizado = cursor.rowcount > 0
@@ -342,7 +365,7 @@ class DatabaseManager:
         """
         conn = self._get_connection()
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM productos WHERE id = ?", (producto_id,))
+        cursor.execute("DELETE FROM productos WHERE id = %s", (producto_id,))
         eliminado = cursor.rowcount > 0
         conn.commit()
         conn.close()
@@ -351,7 +374,7 @@ class DatabaseManager:
     def buscar_por_nombre(self, termino):
         """
         Busca productos cuyo nombre contenga el término de búsqueda.
-        Usa LIKE de SQL para búsqueda parcial (case-insensitive).
+        Usa ILIKE de PostgreSQL para búsqueda parcial (case-insensitive).
 
         Args:
             termino (str): Término de búsqueda.
@@ -361,8 +384,9 @@ class DatabaseManager:
         """
         conn = self._get_connection()
         cursor = conn.cursor()
+        # ILIKE es la versión case-insensitive de LIKE en PostgreSQL
         cursor.execute(
-            "SELECT * FROM productos WHERE nombre LIKE ? ORDER BY id",
+            "SELECT * FROM productos WHERE nombre ILIKE %s ORDER BY id",
             (f"%{termino}%",)
         )
         productos = [dict(row) for row in cursor.fetchall()]
@@ -376,7 +400,7 @@ class DatabaseManager:
         conn = self._get_connection()
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO clientes (nombre, email, telefono) VALUES (?, ?, ?)",
+            "INSERT INTO clientes (nombre, email, telefono) VALUES (%s, %s, %s)",
             (nombre, email, telefono)
         )
         conn.commit()
@@ -391,11 +415,115 @@ class DatabaseManager:
         conn.close()
         return clientes
 
+    # ============================================
+    # OPERACIONES CRUD PARA USUARIOS (Semana 13)
+    # Tabla: usuarios(id_usuario, nombre, mail, password)
+    # ============================================
+
+    def insertar_usuario(self, nombre, mail, password):
+        """
+        Inserta un nuevo usuario en la base de datos.
+
+        Args:
+            nombre (str): Nombre del usuario.
+            mail (str): Correo electrónico (único).
+            password (str): Contraseña del usuario.
+
+        Returns:
+            int: ID del usuario insertado.
+        """
+        conn = self._get_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            """INSERT INTO usuarios (nombre, mail, password)
+               VALUES (%s, %s, %s) RETURNING id_usuario""",
+            (nombre, mail, password)
+        )
+        usuario_id = cursor.fetchone()['id_usuario']
+        conn.commit()
+        conn.close()
+        return usuario_id
+
+    def obtener_usuarios(self):
+        """
+        Obtiene todos los usuarios registrados.
+
+        Returns:
+            list: LISTA de diccionarios con los datos de cada usuario.
+        """
+        conn = self._get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM usuarios ORDER BY id_usuario")
+        usuarios = [dict(row) for row in cursor.fetchall()]
+        conn.close()
+        return usuarios
+
+    def obtener_usuario_por_id(self, usuario_id):
+        """
+        Busca un usuario específico por su ID.
+
+        Args:
+            usuario_id (int): ID del usuario a buscar.
+
+        Returns:
+            dict o None: Diccionario con los datos del usuario, o None si no existe.
+        """
+        conn = self._get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM usuarios WHERE id_usuario = %s", (usuario_id,))
+        row = cursor.fetchone()
+        conn.close()
+        return dict(row) if row else None
+
+    def actualizar_usuario(self, usuario_id, nombre, mail, password):
+        """
+        Actualiza los datos de un usuario existente.
+
+        Args:
+            usuario_id (int): ID del usuario a actualizar.
+            nombre (str): Nuevo nombre.
+            mail (str): Nuevo correo.
+            password (str): Nueva contraseña.
+
+        Returns:
+            bool: True si se actualizó exitosamente.
+        """
+        conn = self._get_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            """UPDATE usuarios
+               SET nombre=%s, mail=%s, password=%s
+               WHERE id_usuario=%s""",
+            (nombre, mail, password, usuario_id)
+        )
+        actualizado = cursor.rowcount > 0
+        conn.commit()
+        conn.close()
+        return actualizado
+
+    def eliminar_usuario(self, usuario_id):
+        """
+        Elimina un usuario de la base de datos por su ID.
+
+        Args:
+            usuario_id (int): ID del usuario a eliminar.
+
+        Returns:
+            bool: True si se eliminó exitosamente.
+        """
+        conn = self._get_connection()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM usuarios WHERE id_usuario = %s", (usuario_id,))
+        eliminado = cursor.rowcount > 0
+        conn.commit()
+        conn.close()
+        return eliminado
+
 
 # ============================================
 # CLASE INVENTARIO
 # Gestiona los productos en memoria usando colecciones (diccionario,
-# conjunto, lista) y sincroniza con SQLite.
+# conjunto, lista) y sincroniza con PostgreSQL (Supabase).
 # ============================================
 
 class Inventario:
@@ -426,7 +554,7 @@ class Inventario:
         # CONJUNTO: almacena IDs usados para verificación rápida de unicidad O(1)
         self._ids_usados = set()
 
-        # Conexión a la base de datos SQLite
+        # Conexión a la base de datos PostgreSQL (Supabase)
         self._db = db_manager if db_manager else DatabaseManager()
 
         # Cargar productos existentes de la DB al diccionario en memoria
@@ -434,17 +562,19 @@ class Inventario:
 
     def _cargar_desde_db(self):
         """
-        Carga todos los productos de la base de datos SQLite
+        Carga todos los productos de la base de datos PostgreSQL
         al DICCIONARIO en memoria y al CONJUNTO de IDs.
         Esto permite operaciones rápidas sin consultar la DB cada vez.
         """
         productos_db = self._db.obtener_todos()  # Retorna una LISTA de diccionarios
         for datos in productos_db:
+            # Convertir Decimal a float si viene de PostgreSQL
+            precio = float(datos["precio"]) if datos["precio"] else 0.0
             producto = Producto(
                 id=datos["id"],
                 nombre=datos["nombre"],
                 categoria=datos["categoria"],
-                precio=datos["precio"],
+                precio=precio,
                 cantidad=datos["cantidad"],
                 descripcion=datos["descripcion"]
             )
@@ -470,7 +600,7 @@ class Inventario:
         # Creamos el objeto Producto con ID temporal (0)
         producto = Producto(0, nombre, categoria, precio, cantidad, descripcion)
 
-        # Insertamos en la DB y obtenemos el ID real generado por SQLite
+        # Insertamos en la DB y obtenemos el ID real generado por PostgreSQL
         nuevo_id = self._db.insertar_producto(producto)
         producto._id = nuevo_id
 
