@@ -25,7 +25,8 @@ load_dotenv()
 # ============================================
 
 # Opción 1: DATABASE_URL completa (preferida para hosting como Render)
-DATABASE_URL = os.getenv('DATABASE_URL')
+# .strip() elimina saltos de línea o espacios al copiar/pegar en dashboards
+DATABASE_URL = os.getenv('DATABASE_URL', '').strip() or None
 
 # Opción 2: Variables individuales (para desarrollo local con .env)
 DB_USER = os.getenv('user')
