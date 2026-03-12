@@ -36,7 +36,12 @@ DB_NAME = os.getenv('dbname', 'postgres')
 
 # Si no hay DATABASE_URL, la construimos desde las variables individuales
 if not DATABASE_URL and DB_HOST:
-    DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?sslmode=require"
+
+# Asegurar que la URL tenga sslmode=require (necesario para Supabase)
+if DATABASE_URL and 'sslmode' not in DATABASE_URL:
+    separator = '&' if '?' in DATABASE_URL else '?'
+    DATABASE_URL = f"{DATABASE_URL}{separator}sslmode=require"
 
 # URI para SQLAlchemy (Flask-SQLAlchemy)
 SQLALCHEMY_DATABASE_URI = DATABASE_URL
