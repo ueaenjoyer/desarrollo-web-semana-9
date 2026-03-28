@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Admin TechByte{% endblock %}
+
+{% block content %}
+<h1>📊 Panel de Administración</h1>
+<p>Bienvenido, <strong>{{ session.usuario.nombre }}</strong>. Aquí tienes un resumen de tu tienda.</p>
+
+{# ===== Tarjetas de estadísticas ===== #}
+<div class="dashboard-stats">
+    <div class="stat-card stat-productos">
+        <span class="stat-icon">📦</span>
+        <div class="stat-info">
+            <h3>{{ total_productos }}</h3>
+            <p>Productos</p>
+        </div>
+    </div>
+    <div class="stat-card stat-categorias">
+        <span class="stat-icon">📂</span>
+        <div class="stat-info">
+            <h3>{{ total_categorias }}</h3>
+            <p>Categorías</p>
+        </div>
+    </div>
+    <div class="stat-card stat-ventas">
+        <span class="stat-icon">🛒</span>
+        <div class="stat-info">
+            <h3>{{ total_ventas }}</h3>
+            <p>Ventas</p>
+        </div>
+    </div>
+    <div class="stat-card stat-ingresos">
+        <span class="stat-icon">💰</span>
+        <div class="stat-info">
+            <h3>${{ "%.2f"|format(ingresos) }}</h3>
+            <p>Ingresos</p>
+        </div>
+    </div>
+</div>
+
+{# ===== Accesos rápidos ===== #}
+<section class="dashboard-acciones">
+    <h2>⚡ Acciones Rápidas</h2>
+    <div class="acciones-grid">
+        <a href="{{ url_for('admin_producto_agregar') }}" class="btn btn-add">➕ Agregar Producto</a>
+        <a href="{{ url_for('admin_categoria_agregar') }}" class="btn btn-add">➕ Nueva Categoría</a>
+        <a href="{{ url_for('admin_venta_registrar') }}" class="btn btn-add">🛒 Registrar Venta</a>
+        <a href="{{ url_for('reporte_productos') }}" class="btn btn-search">📄 Reporte Productos</a>
+        <a href="{{ url_for('reporte_ventas') }}" class="btn btn-search">📄 Reporte Ventas</a>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}{{ producto.nombre }} - TechByte{% endblock %}
+
+{% block content %}
+<div class="producto-detalle">
+    <a href="{{ url_for('catalogo') }}" class="btn btn-secondary">← Volver al catálogo</a>
+
+    <div class="detalle-content">
+        <div class="detalle-info">
+            <span class="producto-categoria">{{ producto.categoria_nombre or 'Sin categoría' }}</span>
+            <h1>{{ producto.nombre }}</h1>
+
+            <div class="detalle-precio">
+                <span class="precio-grande">${{ "%.2f"|format(producto.precio) }}</span>
+            </div>
+
+            <div class="detalle-stock">
+                {% if producto.stock > 5 %}
+                <span class="stock-badge stock-ok">✅ {{ producto.stock }} unidades disponibles</span>
+                {% elif producto.stock > 0 %}
+                <span class="stock-badge stock-low">⚠️ Últimas {{ producto.stock }} unidades</span>
+                {% else %}
+                <span class="stock-badge stock-out">❌ Agotado</span>
+                {% endif %}
+            </div>
+
+            <div class="detalle-descripcion">
+                <h3>📄 Descripción</h3>
+                <p>{{ producto.descripcion or 'Sin descripción disponible.' }}</p>
+            </div>
+
+            <div class="detalle-meta">
+                <p><strong>ID:</strong> {{ producto.id }}</p>
+                <p><strong>Categoría:</strong> {{ producto.categoria_nombre or 'Sin categoría' }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -6,34 +6,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}TechByte - Tienda de Gadgets{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
     <header>
-        <h1>🛒 TechByte - Tienda de Gadgets</h1>
+        <div class="header-content">
+            <h1><a href="{{ url_for('index') }}" class="logo-link">🛒 TechByte</a></h1>
+            <p class="header-tagline">Tu tienda de gadgets y tecnología</p>
+        </div>
     </header>
 
     <nav>
         <ul>
             <li><a href="{{ url_for('index') }}">🏠 Inicio</a></li>
-            <li><a href="{{ url_for('about') }}">ℹ️ Acerca de</a></li>
-            <li><a href="{{ url_for('productos') }}">📦 Productos</a></li>
-            <li><a href="{{ url_for('inventario_lista') }}">🗃️ Inventario</a></li>
-            <li><a href="{{ url_for('datos.datos_index') }}">📂 Datos</a></li>
-            <li><a href="{{ url_for('usuarios.usuarios_lista') }}">👤 Usuarios</a></li>
+            <li><a href="{{ url_for('catalogo') }}">🛍️ Catálogo</a></li>
             <li><a href="{{ url_for('contacto') }}">📧 Contacto</a></li>
+
+            {% if session.get('usuario') %}
+            <li class="nav-divider">|</li>
+            <li><a href="{{ url_for('admin_dashboard') }}">📊 Admin</a></li>
+            <li><a href="{{ url_for('admin_productos') }}">📦 Productos</a></li>
+            <li><a href="{{ url_for('admin_categorias') }}">📂 Categorías</a></li>
+            <li><a href="{{ url_for('admin_ventas') }}">🛒 Ventas</a></li>
+            <li><a href="{{ url_for('logout') }}" class="nav-logout">🚪 Salir</a></li>
+            {% else %}
+            <li><a href="{{ url_for('login') }}">🔑 Admin</a></li>
+            {% endif %}
         </ul>
     </nav>
 
     <div class="container">
+        {# ===== Mensajes Flash ===== #}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="flash-message flash-{{ category }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
         {% block content %}
         {% endblock %}
     </div>
 
     <footer>
         <p>&copy; 2026 TechByte - Tienda de Gadgets</p>
-        <p>Proyecto Flask - Semana 13 (Base de Datos Relacional: PostgreSQL / Supabase)</p>
-        <p>Desarrollado con ❤️ usando Flask, Jinja2, PostgreSQL (Supabase) y SQLAlchemy</p>
+        <p>Proyecto Flask - Semana 15 (CRUD Completo + Capas + PDF)</p>
+        <p>Desarrollado con ❤️ usando Flask, Jinja2, PostgreSQL (Supabase)</p>
     </footer>
 </body>
 

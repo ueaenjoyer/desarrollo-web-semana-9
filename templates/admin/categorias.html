@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Categorías - Admin TechByte{% endblock %}
+
+{% block content %}
+<h1>📂 Gestión de Categorías</h1>
+
+<div class="inventario-actions">
+    <span>📊 Total: <strong>{{ categorias|length }}</strong> categoría(s)</span>
+    <a href="{{ url_for('admin_categoria_agregar') }}" class="btn btn-add">➕ Nueva Categoría</a>
+</div>
+
+{% if categorias and categorias|length > 0 %}
+<div class="table-responsive">
+    <table class="inventory-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cat in categorias %}
+            <tr>
+                <td>{{ cat.id }}</td>
+                <td><strong>{{ cat.nombre }}</strong></td>
+                <td>{{ cat.descripcion or '—' }}</td>
+                <td class="actions-cell">
+                    <a href="{{ url_for('admin_categoria_editar', id=cat.id) }}" class="btn btn-edit">✏️ Editar</a>
+                    <form action="{{ url_for('admin_categoria_eliminar', id=cat.id) }}" method="POST"
+                        style="display: inline;"
+                        onsubmit="return confirm('¿Estás seguro de eliminar la categoría {{ cat.nombre }}?')">
+                        <button type="submit" class="btn btn-delete">🗑️ Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="empty-state">
+    <p>📭 No hay categorías registradas.</p>
+    <a href="{{ url_for('admin_categoria_agregar') }}" class="btn btn-add">➕ Agregar la primera categoría</a>
+</div>
+{% endif %}
+{% endblock %}

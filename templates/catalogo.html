@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Catálogo - TechByte{% endblock %}
+
+{% block content %}
+<h1>🛍️ Catálogo de Productos</h1>
+
+{# ===== Filtro por categoría ===== #}
+<div class="catalogo-filtros">
+    <a href="{{ url_for('catalogo') }}" class="btn {% if not categoria_activa %}btn-filtro-activo{% else %}btn-filtro{% endif %}">
+        Todos
+    </a>
+    {% for cat in categorias %}
+    <a href="{{ url_for('catalogo', categoria=cat.id) }}"
+       class="btn {% if categoria_activa and categoria_activa.id == cat.id %}btn-filtro-activo{% else %}btn-filtro{% endif %}">
+        {{ cat.nombre }}
+    </a>
+    {% endfor %}
+</div>
+
+{% if categoria_activa %}
+<p class="filtro-info">📂 Mostrando: <strong>{{ categoria_activa.nombre }}</strong> ({{ productos|length }} productos)</p>
+{% endif %}
+
+{# ===== Grid de productos ===== #}
+{% if productos and productos|length > 0 %}
+<div class="productos-grid">
+    {% for p in productos %}
+    <div class="producto-card">
+        <div class="producto-card-body">
+            <span class="producto-categoria">{{ p.categoria_nombre or 'Sin categoría' }}</span>
+            <h3>{{ p.nombre }}</h3>
+            <p class="producto-descripcion">{{ p.descripcion[:80] }}{% if p.descripcion|length > 80 %}...{% endif %}</p>
+            <div class="producto-footer">
+                <span class="producto-precio">${{ "%.2f"|format(p.precio) }}</span>
+                {% if p.stock > 0 %}
+                <span class="stock-badge stock-ok">{{ p.stock }} en stock</span>
+                {% else %}
+                <span class="stock-badge stock-out">Agotado</span>
+                {% endif %}
+            </div>
+        </div>
+        <a href="{{ url_for('producto_detalle', id=p.id) }}" class="btn btn-ver">Ver detalle</a>
+    </div>
+    {% endfor %}
+</div>
+
+<p class="total-info">📊 Total: <strong>{{ productos|length }}</strong> producto(s)</p>
+{% else %}
+<div class="empty-state">
+    <p>📭 No hay productos disponibles en esta categoría.</p>
+    <a href="{{ url_for('catalogo') }}" class="btn btn-secondary">Ver todos los productos</a>
+</div>
+{% endif %}
+{% endblock %}

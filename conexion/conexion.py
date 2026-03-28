@@ -1,13 +1,11 @@
 # ============================================
 # conexion.py - Configuración de Conexión a PostgreSQL (Supabase)
-# Semana 13 - TechByte
+# Semana 15 - TechByte
 # ============================================
 #
-# Este archivo contiene la configuración de conexión entre
-# Flask y la base de datos PostgreSQL en Supabase.
-#
-# Soporta dos modos de configuración:
-#   1. DATABASE_URL (variable única) → para Render, Vercel, etc.
+# Conexión entre Flask y PostgreSQL en Supabase.
+# Soporta dos modos:
+#   1. DATABASE_URL (variable única) → Render, Vercel, etc.
 #   2. Variables individuales (user, password, host, port, dbname) → local con .env
 # ============================================
 
@@ -16,8 +14,7 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
 
-# Cargamos las variables de entorno desde el archivo .env (solo funciona en local)
-# En Render/producción las variables se configuran en el dashboard
+# Cargamos variables de entorno desde .env (solo en local)
 load_dotenv()
 
 # ============================================
@@ -25,7 +22,6 @@ load_dotenv()
 # ============================================
 
 # Opción 1: DATABASE_URL completa (preferida para hosting como Render)
-# .strip() elimina saltos de línea o espacios al copiar/pegar en dashboards
 DATABASE_URL = os.getenv('DATABASE_URL', '').strip() or None
 
 # Opción 2: Variables individuales (para desarrollo local con .env)
@@ -51,12 +47,10 @@ SQLALCHEMY_DATABASE_URI = DATABASE_URL
 def get_connection():
     """
     Crea y retorna una conexión directa a PostgreSQL usando psycopg2.
-
-    Usa RealDictCursor para que los resultados se retornen como
-    diccionarios (acceso por nombre de columna en vez de índice).
+    Usa RealDictCursor para resultados como diccionarios.
 
     Returns:
-        psycopg2.connection: Conexión activa a la base de datos PostgreSQL.
+        psycopg2.connection: Conexión activa a PostgreSQL.
     """
     if not DATABASE_URL:
         raise ValueError(
@@ -70,12 +64,7 @@ def get_connection():
 
 
 def verificar_conexion():
-    """
-    Verifica que la conexión a la base de datos funcione correctamente.
-
-    Returns:
-        bool: True si la conexión es exitosa, False si falla.
-    """
+    """Verifica que la conexión a la base de datos funcione correctamente."""
     try:
         conn = get_connection()
         cursor = conn.cursor()
@@ -91,8 +80,5 @@ def verificar_conexion():
         return False
 
 
-# ============================================
-# Si ejecutas este archivo directamente, verifica la conexión
-# ============================================
 if __name__ == "__main__":
     verificar_conexion()

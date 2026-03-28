@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Productos - Admin TechByte{% endblock %}
+
+{% block content %}
+<h1>📦 Gestión de Productos</h1>
+
+<div class="inventario-actions">
+    <span>📊 Total: <strong>{{ productos|length }}</strong> producto(s)</span>
+    <a href="{{ url_for('admin_producto_agregar') }}" class="btn btn-add">➕ Agregar Producto</a>
+</div>
+
+{% if productos and productos|length > 0 %}
+<div class="table-responsive">
+    <table class="inventory-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Categoría</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in productos %}
+            <tr>
+                <td>{{ p.id }}</td>
+                <td><strong>{{ p.nombre }}</strong></td>
+                <td><span class="badge">{{ p.categoria_nombre or 'Sin categoría' }}</span></td>
+                <td class="precio">${{ "%.2f"|format(p.precio) }}</td>
+                <td>
+                    {% if p.stock > 5 %}
+                    <span class="stock stock-ok">{{ p.stock }} ✅</span>
+                    {% elif p.stock > 0 %}
+                    <span class="stock stock-low">{{ p.stock }} ⚠️</span>
+                    {% else %}
+                    <span class="stock stock-out">Agotado ❌</span>
+                    {% endif %}
+                </td>
+                <td class="descripcion-cell">{{ p.descripcion[:50] }}{% if p.descripcion|length > 50 %}...{% endif %}</td>
+                <td class="actions-cell">
+                    <a href="{{ url_for('admin_producto_editar', id=p.id) }}" class="btn btn-edit">✏️ Editar</a>
+                    <form action="{{ url_for('admin_producto_eliminar', id=p.id) }}" method="POST"
+                        style="display: inline;"
+                        onsubmit="return confirm('¿Estás seguro de eliminar {{ p.nombre }}?')">
+                        <button type="submit" class="btn btn-delete">🗑️ Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="empty-state">
+    <p>📭 No hay productos registrados.</p>
+    <a href="{{ url_for('admin_producto_agregar') }}" class="btn btn-add">➕ Agregar el primer producto</a>
+</div>
+{% endif %}
+{% endblock %}

@@ -3,42 +3,79 @@
 {% block title %}Inicio - TechByte{% endblock %}
 
 {% block content %}
-<section>
+{# ===== Hero Section ===== #}
+<section class="hero">
     <h1>🎉 Bienvenido a TechByte</h1>
-    <p>Tu tienda de confianza para los mejores gadgets y tecnología del mercado.</p>
-    <p>Ofrecemos productos de calidad con garantía y envío rápido a todo el país.</p>
+    <p class="hero-subtitle">Tu tienda de confianza para los mejores gadgets y tecnología del mercado.</p>
+    <a href="{{ url_for('catalogo') }}" class="btn btn-hero">Ver Catálogo 🛍️</a>
 </section>
 
-<section style="margin-top: 2rem;">
+{# ===== Categorías ===== #}
+{% if categorias %}
+<section class="section-categorias">
+    <h2>📂 Categorías</h2>
+    <div class="categorias-grid">
+        {% for cat in categorias %}
+        <a href="{{ url_for('catalogo', categoria=cat.id) }}" class="categoria-card">
+            <h3>{{ cat.nombre }}</h3>
+            <p>{{ cat.descripcion }}</p>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+{# ===== Productos Destacados ===== #}
+{% if destacados %}
+<section class="section-destacados">
+    <h2>⭐ Productos Destacados</h2>
+    <div class="productos-grid">
+        {% for p in destacados %}
+        <div class="producto-card">
+            <div class="producto-card-body">
+                <span class="producto-categoria">{{ p.categoria_nombre or 'Sin categoría' }}</span>
+                <h3>{{ p.nombre }}</h3>
+                <p class="producto-descripcion">{{ p.descripcion[:80] }}{% if p.descripcion|length > 80 %}...{% endif %}</p>
+                <div class="producto-footer">
+                    <span class="producto-precio">${{ "%.2f"|format(p.precio) }}</span>
+                    {% if p.stock > 0 %}
+                    <span class="stock-badge stock-ok">En stock</span>
+                    {% else %}
+                    <span class="stock-badge stock-out">Agotado</span>
+                    {% endif %}
+                </div>
+            </div>
+            <a href="{{ url_for('producto_detalle', id=p.id) }}" class="btn btn-ver">Ver detalle</a>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+{# ===== Por qué elegirnos ===== #}
+<section class="section-features">
     <h2>¿Por qué elegir TechByte?</h2>
-
-    <div class="product-card">
-        <h3>✅ Productos Originales</h3>
-        <p>Todos nuestros productos son 100% originales y cuentan con garantía oficial.</p>
+    <div class="features-grid">
+        <div class="feature-card">
+            <span class="feature-icon">✅</span>
+            <h3>Productos Originales</h3>
+            <p>100% originales con garantía oficial.</p>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">🚚</span>
+            <h3>Envío Rápido</h3>
+            <p>Entrega en 24-48 horas.</p>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">💳</span>
+            <h3>Pago Seguro</h3>
+            <p>Encriptación de última generación.</p>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">🎧</span>
+            <h3>Soporte 24/7</h3>
+            <p>Ayuda en cualquier momento.</p>
+        </div>
     </div>
-
-    <div class="product-card">
-        <h3>🚚 Envío Rápido</h3>
-        <p>Entrega en 24-48 horas en la mayoría de las ciudades principales.</p>
-    </div>
-
-    <div class="product-card">
-        <h3>💳 Pago Seguro</h3>
-        <p>Múltiples métodos de pago con tecnología de encriptación de última generación.</p>
-    </div>
-
-    <div class="product-card">
-        <h3>🎧 Soporte 24/7</h3>
-        <p>Nuestro equipo está disponible para ayudarte en cualquier momento.</p>
-    </div>
-</section>
-
-<section style="margin-top: 2rem; text-align: center; padding: 2rem; background-color: #f0f0f0; border-radius: 10px;">
-    <h2>¿Listo para comprar?</h2>
-    <p>Explora nuestro catálogo completo de productos</p>
-    <a href="{{ url_for('productos') }}"
-        style="display: inline-block; margin-top: 1rem; padding: 1rem 2rem; background-color: #667eea; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
-        Ver Productos 🛍️
-    </a>
 </section>
 {% endblock %}

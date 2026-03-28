@@ -1,131 +1,51 @@
-# Guía de Despliegue en Render 🚀
+# 🚀 Guía de Despliegue - TechByte (Semana 15)
 
-Esta guía te ayudará a desplegar tu aplicación TechByte en Render.
+Este documento describe cómo desplegar el proyecto TechByte de manera profesional utilizando un proveedor en la nube compatible con contenedores Python/WSGI, como **Render**, apoyado por una base de datos relacional externa alojada en **Supabase**.
 
-## Paso 1: Preparar el Repositorio en GitHub
+## 1. Preparación de la Base de Datos (Supabase)
 
-1. **Inicializa Git** (si no lo has hecho):
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit: TechByte Flask app"
-   ```
+Supabase aloja la instancia central de **PostgreSQL** para la aplicación.
+1.  Ingresa a [Supabase](https://supabase.com) y crea un proyecto gratuito.
+2.  Al inicializarse el proyecto, dirígete a **Project Settings -> Database** (Configuración -> Base de datos).
+3.  Copia y reserva el enlace **Connection string (URI)**. Usualmente tiene este formato:
+    ```
+    postgresql://postgres.nombredelproyecto:[CONTRASEÑA]@aws-0-region-pooler.supabase.com:6543/postgres?sslmode=require
+    ```
 
-2. **Crea un repositorio en GitHub**:
-   - Ve a [github.com](https://github.com) y crea un nuevo repositorio
-   - Nómbralo `proyecto-techbyte` o similar
+**Nota sobre Migraciones:** La función `init_tabla()` interna del código en `app.py` gestionará automáticamente la creación de las tablas relacionales (`categorias`, `productos`, `ventas`, `usuarios`) y generará el administrador primario (`admin@techbyte.com` / `admin123`).
 
-3. **Sube tu código**:
-   ```bash
-   git remote add origin https://github.com/TU_USUARIO/proyecto-techbyte.git
-   git branch -M main
-   git push -u origin main
-   ```
+## 2. GitHub (Versión de Control)
 
-## Paso 2: Configurar Render
+1.  Asegúrate de haber resuelto los cambios finales.
+2.  Verifica que tu archivo `.gitignore` prohíbe explícitamente la distribución de metadatos confidenciales en la nube subiendo la línea `.env`.
+3.  Sube y sube los cambios (Commit + Push) de toda la carpeta `proyecto_Paul_TiendaGadget` a un repositorio remoto de GitHub.
 
-1. **Crea una cuenta** en [render.com](https://render.com) (gratis)
+## 3. Despliegue en Render (App Web Flask)
 
-2. **Conecta GitHub**:
-   - En el dashboard de Render, haz clic en "New +"
-   - Selecciona "Web Service"
-   - Conecta tu cuenta de GitHub
-   - Autoriza a Render para acceder a tus repositorios
+Ocuparemos Render dado su tier gratuito sin tarjetas.
 
-3. **Selecciona tu repositorio**:
-   - Busca `proyecto-techbyte`
-   - Haz clic en "Connect"
+1.  Procede a registrar o iniciar sesión en [Render.com](https://render.com).
+2.  Desplázate al marco conceptual en la parte superior derecha y dale a **New -> Web Service**.
+3.  Conecta u otorga los permisos para tu cuenta GitHub y busca el repositorio expuesto. Clic en **Connect**.
+4.  Llene la información de la siguiente forma:
+    *   **Name:** `techbyte-semana15-deploy` (o el nombre deseado)
+    *   **Region:** La más cerca a tu país.
+    *   **Branch:** `main` (o dependiendo cómo este designada la raíz en GitHub)
+    *   **Root Directory:** El caso lo amerita si el archivo `app.py` está inserto dentro de una subcarpeta (ej. `proyecto_Paul_TiendaGadget`). De ser la raíz literal de todo GitHub, déje esto nulo o vacío.
+    *   **Runtime:** `Python 3`
+    *   **Build Command:** `pip install -r requirements.txt` (Aquí se descargará Flask, psycopg2 y fpdf2).
+    *   **Start Command:** `gunicorn app:app`
 
-## Paso 3: Configuración del Servicio
+## 4. Variables de Entorno (Environment Variables)
 
-Completa los siguientes campos:
+Este es el paso vital. Si falla esto, devolverá error 500 al arrancar ya que intentará buscar bases inexistentes.
 
-| Campo | Valor |
-|-------|-------|
-| **Name** | `techbyte-tienda` (o el nombre que prefieras) |
-| **Region** | Selecciona la más cercana (ej: Oregon) |
-| **Branch** | `main` |
-| **Runtime** | `Python 3` |
-| **Build Command** | `pip install -r requirements.txt` |
-| **Start Command** | `gunicorn app:app` |
+*   En la misma configuración de Render (una vez se seleccione a "Web Service"), baja hacia **Environment Variables**.
+*   Añade y compila un variable designada `DATABASE_URL`. Pega allí toda la Connection string de su base de Supabase (el enlace extenso con SSL configurado).
+*   Recomendable: Añade una nueva directiva nombrada `SECRET_KEY` en donde adjudicas una oración larga y compleja, para proteger encriptaciones y sesiones Flask en el servidor de producción.
 
-### Configuración Avanzada (Opcional)
+## 5. Lanzar y Visualizar
 
-- **Instance Type**: Free (para empezar)
-- **Environment Variables**: No necesitas ninguna por ahora
-
-## Paso 4: Desplegar
-
-1. Haz clic en **"Create Web Service"**
-2. Render comenzará a:
-   - Clonar tu repositorio
-   - Instalar dependencias
-   - Iniciar tu aplicación
-
-3. **Espera 2-3 minutos** mientras se despliega
-
-## Paso 5: Verificar
-
-1. Una vez completado, Render te dará una URL como:
-   ```
-   https://techbyte-tienda.onrender.com
-   ```
-
-2. **Abre esa URL** en tu navegador
-3. ¡Deberías ver tu aplicación TechByte funcionando! 🎉
-
-## 🔄 Actualizaciones Automáticas
-
-Cada vez que hagas `git push` a tu repositorio, Render automáticamente:
-- Detectará los cambios
-- Reconstruirá la aplicación
-- Desplegará la nueva versión
-
-## ⚠️ Notas Importantes
-
-### Plan Gratuito de Render
-- Tu app se "dormirá" después de 15 minutos de inactividad
-- La primera carga después de dormir puede tardar 30-60 segundos
-- Esto es normal en el plan gratuito
-
-### Si hay Errores
-1. Revisa los **logs** en el dashboard de Render
-2. Verifica que `requirements.txt` esté actualizado
-3. Asegúrate de que `gunicorn` esté en `requirements.txt`
-
-## 🎯 Checklist de Despliegue
-
-- [ ] Código subido a GitHub
-- [ ] Cuenta creada en Render
-- [ ] Repositorio conectado
-- [ ] Configuración completada
-- [ ] Aplicación desplegada
-- [ ] URL funcionando correctamente
-
-## 🆘 Solución de Problemas
-
-### Error: "Application failed to start"
-- Verifica que el comando de inicio sea exactamente: `gunicorn app:app`
-- Revisa que `app.py` esté en la raíz del proyecto
-
-### Error: "Module not found"
-- Actualiza `requirements.txt`:
-  ```bash
-  uv pip freeze | Out-File -Encoding utf8 requirements.txt
-  git add requirements.txt
-  git commit -m "Update requirements"
-  git push
-  ```
-
-### La página no carga
-- Espera 1-2 minutos (el plan gratuito tarda en iniciar)
-- Revisa los logs en el dashboard de Render
-
-## 📚 Recursos Adicionales
-
-- [Documentación de Render](https://render.com/docs)
-- [Guía de Flask en Render](https://render.com/docs/deploy-flask)
-
----
-
-**¡Listo!** Tu aplicación TechByte ahora está en la nube y accesible desde cualquier lugar del mundo. 🌍
+1.  Clic a la opción verde **"Create Web Service"**. Render construirá iteraciones instalando todas las librerías desde el archivo en `requirements.txt`.
+2.  Una vez marcado con ✅ Live. Ve al enlace autogenerado emitido en la parte superior izquierda (ejemplo: `techbyte-deploy-h1k5.onrender.com`).
+3.  Pruebe su catálogo o inicie al dashboard. Los reportes PDF (FPDF2) no necesitan instalaciones subyacentes ya que el motor usa la RAM transitoriamente para generar la descarga.

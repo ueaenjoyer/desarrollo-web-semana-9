@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Ventas - Admin TechByte{% endblock %}
+
+{% block content %}
+<h1>🛒 Gestión de Ventas</h1>
+
+<div class="inventario-actions">
+    <span>📊 Total: <strong>{{ ventas|length }}</strong> venta(s)</span>
+    <a href="{{ url_for('admin_venta_registrar') }}" class="btn btn-add">🛒 Registrar Venta</a>
+</div>
+
+{% if ventas and ventas|length > 0 %}
+<div class="table-responsive">
+    <table class="inventory-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Producto</th>
+                <th>Cliente</th>
+                <th>Email</th>
+                <th>Cant.</th>
+                <th>P. Unitario</th>
+                <th>Total</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for v in ventas %}
+            <tr>
+                <td>{{ v.id }}</td>
+                <td><strong>{{ v.producto_nombre or 'Producto eliminado' }}</strong></td>
+                <td>{{ v.cliente_nombre }}</td>
+                <td>{{ v.cliente_email or '—' }}</td>
+                <td>{{ v.cantidad }}</td>
+                <td class="precio">${{ "%.2f"|format(v.precio_unitario) }}</td>
+                <td class="precio"><strong>${{ "%.2f"|format(v.total) }}</strong></td>
+                <td>{{ v.fecha.strftime('%d/%m/%Y') if v.fecha else '—' }}</td>
+                <td class="actions-cell">
+                    <form action="{{ url_for('admin_venta_eliminar', id=v.id) }}" method="POST"
+                        style="display: inline;"
+                        onsubmit="return confirm('¿Estás seguro de eliminar esta venta?')">
+                        <button type="submit" class="btn btn-delete">🗑️ Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="empty-state">
+    <p>📭 No hay ventas registradas.</p>
+    <a href="{{ url_for('admin_venta_registrar') }}" class="btn btn-add">🛒 Registrar la primera venta</a>
+</div>
+{% endif %}
+{% endblock %}
