@@ -1,60 +1,57 @@
-# TechByte - Proyecto Final Desarrollo Web (Semana 15)
+# 🛒 TechByte - Proyecto Final Desarrollo Web
 
-**Desarrollador:** Paul
-**Asignatura:** Desarrollo Web
+**Sistema web transaccional completo, estructurado bajo el patrón MVC, desplegado en la nube e interconectado con una base de datos relacional.**
 
-Este proyecto representa la culminación práctica de los conceptos abordados durante el curso. Se trata de una tienda en línea (TechByte) construida con Python y **Flask**, respaldada por una base de datos relacional **PostgreSQL** alojada en la nube (Supabase).
-
----
-
-## 🏗️ Estructura y Arquitectura del Proyecto
-
-El sistema fue refactorizado esta semana para implementar una sólida **Arquitectura en Capas (N-Tier/MVC)**. El objetivo principal es separar las responsabilidades del código de manera limpia y mantenible:
-
-1.  **Modelos (`models/`):** Contiene las clases orientadas a objetos (`Producto`, `Categoria`, `Venta`, `Usuario`) que mapean los datos traídos de la base de datos hacia estructuras lógicas nativas de Python.
-2.  **Servicios (`services/`):** Capa encargada de la lógica de negocio y las consultas de persistencia (SQL CRUD). Archivos como `producto_service.py` aíslan al controlador principal de contactar directamente a la base de datos. También gestionan la integridad, por ejemplo, **descontando el stock** automáticamente tras registrar una venta.
-3.  **Formularios (`forms/`):** Capa de validación abstracta. Todas las peticiones `POST` que recibe el servidor pasan por estas clases (ej. `VentaForm`) asegurando que los tipos de datos sean correctos antes de insertarlos a PostgreSQL.
-4.  **Controlador (`app.py`):** Mantiene únicamente las reglas de enrutamiento (Flask `@app.route`), la inyección de Jinja2 a `templates/` y la inicialización de la librería `fpdf2` para exportar documentos PDF en memoria.
-5.  **Base de Datos Relacional (`database.sql`):** Script base con **4 tablas** relacionales, priorizando restricciones y foreign keys:
-    *   `categorias` (1) → (N) `productos`
-    *   `productos` (1) → (N) `ventas`
-    *   `usuarios` (Base para el login).
+Este proyecto representa la entrega de la **Semana Final** de nuestra asignatura, cumpliendo al 100% con los requerimientos técnicos y funcionales solicitados en la rúbrica de evaluación.
 
 ---
 
-## 🧪 Instrucciones para el Docente (Prueba del Proyecto)
+## 👥 Equipo de Desarrollo
 
-Para evaluar todas las rúbricas estipuladas para este proyecto, siga estos pasos de verificación:
+*   **Paul** (Desarrollador Backend / Arquitectura de Software)
+*   **Noelia** (Backend / QA Funcionalidad)
+*   **Marleyth** (Frontend / Exposición)
+*   **John** *(Nota: Nuestro compañero John colaboró en el desarrollo del código como evidencian nuestras sesiones, pero no pudo salir en la grabación del video por calamidades domésticas).*
 
-### 1. Acceso al Proyecto Desplegado (Recomendado)
-El proyecto ha sido desplegado en producción utilizando **Render**. Puede probar todas las funcionalidades directamente sin necesidad de instalaciones locales haciendo clic en el siguiente enlace:
-👉 **[https://desarrollo-web-semana-9.onrender.com/](https://desarrollo-web-semana-9.onrender.com/)**
+---
 
-### 2. Primera Vista (Sitio Público)
-Abra el enlace del proyecto o navegue a la raíz del sitio:
-*   Podrá observar el catálogo público donde **cualquier visitante** puede visualizar los gadgets de TechByte, categorizados visualmente sin necesidad de autenticarse.
-*   Note los indicadores de "Agotado" y validaciones de visualización en los diseños.
+## 🚀 Entregables Principales
 
-### 3. Ingreso al Panel Administrativo
-Haga clic en el botón de la barra de menú superior derecha ("🔑 Admin") o diríjase a la ruta `/login` en la URL desplegada.
+Para facilitar la revisión por parte del docente, adjuntamos a continuación los enlaces cruciales del proyecto. Al haber utilizado un enfoque práctico y profesional, **la aplicación web ya se encuentra probada y desplegada en un entorno real.**
 
-El sistema cuenta con prevención contra intrusos (decoradores con soporte de encriptado Hash en Werkzeug). Para testear el acceso use las siguientes credenciales maestras autogeneradas por la plataforma:
+### 1. Sistema en Vivo (Producción)
+🌐 **[Acceso a la plataforma en vivo - Render (Clic aquí)](https://desarrollo-web-semana-9.onrender.com/)**
 
-*   **Email del Administrador:** `admin@techbyte.com`
+Para verificar el cumplimiento del ecosistema interno (Auth y CRUD), por favor ingrese a la ruta de `/login` o haga clic en el botón superior derecho de "Admin" utilizando nuestras credenciales protegidas de acceso universal:
+
+*   **Usuario:** `admin@techbyte.com`
 *   **Contraseña:** `admin123`
 
-### 4. Evaluación de Operaciones (CRUD Completo)
-Una vez en el Dashboard analítico, podrá observar las siguientes funciones conectadas al motor en vivo de Postgres:
-1.  **Gestión de Categorías:** Permite dar de alta secciones y editarlas (`INSERT`/`UPDATE`/`DELETE`).
-2.  **Gestión de Productos:** Cada producto depende rigurosamente de su categoría vinculada por `id_categoria` (Clave foránea probada). 
-3.  **Gestión de Ventas:** Intente registrar una venta; se validará que **haya stock suficiente** en el producto, calculará el total en función del costo unitario y finalmente **descontará la cantidad comprada de la base de datos**.
+### 2. Video de Sustentación Grupal (Opción Alternativa de Defensa)
+Hemos preparado y subido a la red la grabación de la demostración guiada del sistema y la revisión de requisitos:
 
-### 5. Generación de Reportes PDF
-Ingrese a cualquiera de los submenús del Dashboard que indican "📄 Reporte Productos" o "📄 Reporte Ventas". 
-1.  La aplicación se valdrá de `fpdf2`.
-2.  Descargará (sin necesidad de instalaciones extras) reportes estilizados mapeando los resultados desde sus listas de Diccionarios y SQL. No almacenan basura residual en el disco local ya que responden transcodificados a bytes.
+🎥 **[Videodemostración del Proyecto en YouTube](https://youtu.be/v2u3WZ0GZls)**
 
 ---
 
-Cualquier duda adicional referente al diseño de dependencias o esquemas, contactar directamente para soporte local. 
-¡Gracias!
+## 🎯 Cumplimiento de la Rúbrica de Evaluación
+
+En este aplicativo, las funcionalidades solicitadas fueron implementadas satisfactoriamente de la siguiente forma:
+
+| Requerimiento Solicitado | Cumplimiento e Implementación Técnica en TechByte |
+| :--- | :--- |
+| **🔐 Sistema de login** | **Validado.** Se protege el Panel Administrativo (MVC: Carpeta `templates/admin/`) con restricción de Flask (`@login_requerido`). Las contraseñas del administrador jamás viajan solas, están hasheadas vía *Werkzeug Security*. |
+| **🗂️ Operaciones CRUD** | **Validado.** Control y creación, lectura, actualización y eliminación de los objetos virtuales `Productos` (con foto, precio, descripción) y las `Categorías` (tipo computo). Las entidades se blindan usando *Forms*. |
+| **🧩 3 Tablas Relacionadas** | **Completamente Validado (Tenemos 4).** Diseñamos un core relacional duro sobre **PostgreSQL (Supabase)**. Tenemos la tabla `Usuarios` (Login), y las tablas interconectadas para soportar la lógica de negocio real (`Categorías → Productos → Ventas`). Si intentas generar una Venta, nuestra lógica transaccional descuenta automáticamente el 'stock' que el Producto provee utilizando `FOREIGN KEYS`. |
+| **☁️ Despliegue en la Nube** | **Validado Extras.** La inicialización la programamos para evitar el bloqueo Gunicorn sobre la nube de Render (separando en script `init_db.py`). |
+
+---
+
+## 🧑‍💻 Evidencia de Trabajo Colaborativo (Pair Programming)
+
+El desarrollo del Backend, la programación del enrutamiento y la maquetación del diseño se realizaron a través de mecánicas de programación en pares y lluvia de ideas a distancia.
+
+<div align="center">
+  <img src="https://i.ibb.co/HpCMKxYX/Whats-App-Image-2026-04-05-at-8-13-59-PM-1.jpg" width="45%" alt="Evidencia Pair Programming 1">
+  <img src="https://i.ibb.co/bMXGjPHw/Whats-App-Image-2026-04-05-at-8-13-27-PM.jpg" width="45%" alt="Evidencia Pair Programming 2">
+</div>
