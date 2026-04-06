@@ -33,14 +33,10 @@ app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'techbyte_semana15_secret_key')
 
 # ============================================
-# INICIALIZACIÓN DE TABLAS
+# INICIALIZACIÓN DE TABLAS (Trasladado a init_db.py)
 # ============================================
-
-with app.app_context():
-    categoria_service.init_tabla()
-    producto_service.init_tabla()
-    usuario_service.init_tabla()
-    venta_service.init_tabla()
+# Se eliminó la inicialización automática aquí para evitar bloqueos
+# múltiples (deadlocks) causados por los workers de gunicorn en Render.
 
 
 # ============================================

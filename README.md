@@ -1,85 +1,60 @@
-# 🛒 TechByte - Tienda de Gadgets (Semana 15)
+# TechByte - Proyecto Final Desarrollo Web (Semana 15)
 
-Este proyecto es una aplicación web desarrollada con **Flask** que simula una tienda en línea realista de dispositivos tecnológicos. El proyecto ha evolucionado a lo largo de las semanas para implementar una arquitectura en capas escalable, base de datos relacional y autenticación de usuarios.
+**Desarrollador:** Paul
+**Asignatura:** Desarrollo Web
 
-## 🚀 Características Principales
+Este proyecto representa la culminación práctica de los conceptos abordados durante el curso. Se trata de una tienda en línea (TechByte) construida con Python y **Flask**, respaldada por una base de datos relacional **PostgreSQL** alojada en la nube (Supabase).
 
-*   **Arquitectura en Capas:** Separación clara entre Modelos (`models/`), Servicios (`services/`), Formularios (`forms/`) y Controladores (`app.py`).
-*   **Base de Datos Relacional:** Uso de **PostgreSQL** para manejar 3 entidades relacionadas (Categorías → Productos → Ventas) además de Usuarios.
-*   **Panel Administrativo:** Rutas protegidas por un sistema de **Login** con contraseñas encriptadas nativamente (`werkzeug.security`).
-*   **Gestión de Inventario Dinámico:** Soporte completo de operaciones CRUD. Registrar una venta descuenta automáticamente el stock del producto vendido.
-*   **Reportes en PDF:** Generación visual de catálogos y resumen estadístico de ventas a través de `fpdf2`.
-*   **Catálogo Público Público:** Los visitantes (sin autenticar) pueden ver listados filtrables de productos y su nivel de existencias.
+---
 
-## 🛠️ Tecnologías Utilizadas
+## 🏗️ Estructura y Arquitectura del Proyecto
 
-*   **Backend:** Python 3, Flask, psycopg2
-*   **Persistencia:** PostgreSQL (alojado en Supabase)
-*   **Frontend:** HTML5, CSS3 (Vainilla, Diseño Responsivo), Jinja2
-*   **Gestor de Dependencias:** `uv` (y compatible con `pip`)
-*   **Generador PDF:** `fpdf2`
+El sistema fue refactorizado esta semana para implementar una sólida **Arquitectura en Capas (N-Tier/MVC)**. El objetivo principal es separar las responsabilidades del código de manera limpia y mantenible:
 
-## ⚙️ Estructura del Proyecto
+1.  **Modelos (`models/`):** Contiene las clases orientadas a objetos (`Producto`, `Categoria`, `Venta`, `Usuario`) que mapean los datos traídos de la base de datos hacia estructuras lógicas nativas de Python.
+2.  **Servicios (`services/`):** Capa encargada de la lógica de negocio y las consultas de persistencia (SQL CRUD). Archivos como `producto_service.py` aíslan al controlador principal de contactar directamente a la base de datos. También gestionan la integridad, por ejemplo, **descontando el stock** automáticamente tras registrar una venta.
+3.  **Formularios (`forms/`):** Capa de validación abstracta. Todas las peticiones `POST` que recibe el servidor pasan por estas clases (ej. `VentaForm`) asegurando que los tipos de datos sean correctos antes de insertarlos a PostgreSQL.
+4.  **Controlador (`app.py`):** Mantiene únicamente las reglas de enrutamiento (Flask `@app.route`), la inyección de Jinja2 a `templates/` y la inicialización de la librería `fpdf2` para exportar documentos PDF en memoria.
+5.  **Base de Datos Relacional (`database.sql`):** Script base con **4 tablas** relacionales, priorizando restricciones y foreign keys:
+    *   `categorias` (1) → (N) `productos`
+    *   `productos` (1) → (N) `ventas`
+    *   `usuarios` (Base para el login).
 
-```text
-proyecto_Paul_TiendaGadget/
-├── app.py                      # Punto de entrada y definición de rutas
-├── conexion/
-│   └── conexion.py             # Lógica de conexión a PostgreSQL
-├── models/                     # Entidades del negocio
-│   ├── categoria.py
-│   ├── producto.py
-│   ├── usuario.py
-│   └── venta.py
-├── services/                   # Lógica de negocio y consultas SQL CRUD
-│   ├── categoria_service.py
-│   ├── producto_service.py
-│   ├── usuario_service.py
-│   └── venta_service.py
-├── forms/                      # Validadores de datos
-│   ├── categoria_form.py
-│   ├── producto_form.py
-│   └── venta_form.py
-├── templates/                  # Plantillas visuales Jinja2
-│   ├── admin/                  # Vistas protegidas
-│   ├── base.html
-│   └── ...
-├── static/                     # Archivos estáticos (CSS)
-├── database.sql                # Script DDL/DML de la base de datos
-└── requirements.txt            # Dependencias de producción
-```
+---
 
-## 💻 Instalación y Uso Local
+## 🧪 Instrucciones para el Docente (Prueba del Proyecto)
 
-1.  **Clonar y Acceder:**
-    ```bash
-    git clone <tu-repositorio>
-    cd "proyecto_Paul_TiendaGadget"
-    ```
+Para evaluar todas las rúbricas estipuladas para este proyecto, siga estos pasos de verificación:
 
-2.  **Configurar Variables de Entorno (.env):**
-    Renombra `.env.example` a `.env` y completa tus credenciales de PostgreSQL. Alternativamente, puedes usar la variable universal:
-    ```env
-    DATABASE_URL=postgresql://usuario:password@host:puerto/dbname?sslmode=require
-    SECRET_KEY=clave_super_secreta_flask
-    ```
+### 1. Acceso al Proyecto Desplegado (Recomendado)
+El proyecto ha sido desplegado en producción utilizando **Render**. Puede probar todas las funcionalidades directamente sin necesidad de instalaciones locales haciendo clic en el siguiente enlace:
+👉 **[https://desarrollo-web-semana-9.onrender.com/](https://desarrollo-web-semana-9.onrender.com/)**
 
-3.  **Instalar Dependencias:**
-    Recomendamos utilizar `uv` por su rapidez:
-    ```bash
-    uv pip install -r requirements.txt
-    ```
-    (o `pip install -r requirements.txt` si no posees uv)
+### 2. Primera Vista (Sitio Público)
+Abra el enlace del proyecto o navegue a la raíz del sitio:
+*   Podrá observar el catálogo público donde **cualquier visitante** puede visualizar los gadgets de TechByte, categorizados visualmente sin necesidad de autenticarse.
+*   Note los indicadores de "Agotado" y validaciones de visualización en los diseños.
 
-4.  **Ejecutar Servicio:**
-    ```bash
-    uv run python app.py
-    ```
+### 3. Ingreso al Panel Administrativo
+Haga clic en el botón de la barra de menú superior derecha ("🔑 Admin") o diríjase a la ruta `/login` en la URL desplegada.
 
-5.  **Abrir en Navegador:**
-    El sistema se auto-construirá creando las tablas e insertando un usuario administrador por defecto `admin@techbyte.com` (pass: `admin123`).
-    *   **Catálogo:** `http://127.0.0.1:5000/`
-    *   **Login Admin:** `http://127.0.0.1:5000/login`
+El sistema cuenta con prevención contra intrusos (decoradores con soporte de encriptado Hash en Werkzeug). Para testear el acceso use las siguientes credenciales maestras autogeneradas por la plataforma:
 
-## 👨‍💻 Autor
-Paul - Desarrollo Web Semana 15
+*   **Email del Administrador:** `admin@techbyte.com`
+*   **Contraseña:** `admin123`
+
+### 4. Evaluación de Operaciones (CRUD Completo)
+Una vez en el Dashboard analítico, podrá observar las siguientes funciones conectadas al motor en vivo de Postgres:
+1.  **Gestión de Categorías:** Permite dar de alta secciones y editarlas (`INSERT`/`UPDATE`/`DELETE`).
+2.  **Gestión de Productos:** Cada producto depende rigurosamente de su categoría vinculada por `id_categoria` (Clave foránea probada). 
+3.  **Gestión de Ventas:** Intente registrar una venta; se validará que **haya stock suficiente** en el producto, calculará el total en función del costo unitario y finalmente **descontará la cantidad comprada de la base de datos**.
+
+### 5. Generación de Reportes PDF
+Ingrese a cualquiera de los submenús del Dashboard que indican "📄 Reporte Productos" o "📄 Reporte Ventas". 
+1.  La aplicación se valdrá de `fpdf2`.
+2.  Descargará (sin necesidad de instalaciones extras) reportes estilizados mapeando los resultados desde sus listas de Diccionarios y SQL. No almacenan basura residual en el disco local ya que responden transcodificados a bytes.
+
+---
+
+Cualquier duda adicional referente al diseño de dependencias o esquemas, contactar directamente para soporte local. 
+¡Gracias!
